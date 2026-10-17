@@ -5,6 +5,7 @@ Gemini racconta i numeri che riceve: non sceglie i titoli e non produce numeri p
 import json
 import logging
 import os
+import time
 from typing import Protocol
 
 from agente.config import Config
@@ -20,6 +21,18 @@ class Cervello(Protocol):
     def genera(self, prompt: str) -> str: ...
 
 
+def con_tentativi(funzione, prompt: str, tentativi: int = 3, pausa_s: float = 10):
+    """Gemini a volte risponde "troppo traffico" (503): riprova prima di arrendersi."""
+    for tentativo in range(1, tentativi + 1):
+        try:
+            return funzione(prompt)
+        except Exception as errore:
+            if tentativo == tentativi:
+                raise
+            log.warning("Gemini, tentativo %d fallito: %s", tentativo, errore)
+            time.sleep(pausa_s)
+
+
 class CervelloGemini:
     def __init__(self, modello: str, chiave: str):
         from google import genai
@@ -28,6 +41,9 @@ class CervelloGemini:
         self.client = genai.Client(api_key=chiave)
 
     def genera(self, prompt: str) -> str:
+        return con_tentativi(self._genera, prompt)
+
+    def _genera(self, prompt: str) -> str:
         risposta = self.client.models.generate_content(
             model=self.modello, contents=prompt,
             config={"response_mime_type": "application/json"})

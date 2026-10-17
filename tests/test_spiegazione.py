@@ -82,3 +82,27 @@ def test_prompt_avvisa_solo_studio():
     cervello = CervelloFinto(TESTI_OK)
     scrivi_testi(cervello, SCHEDA, [])
     assert "solo per studio" not in cervello.prompt[0]
+
+
+def test_riprova_dopo_errore_temporaneo():
+    from agente.spiegazione import con_tentativi
+    chiamate = []
+
+    def genera(prompt):
+        chiamate.append(prompt)
+        if len(chiamate) < 3:
+            raise RuntimeError("503 UNAVAILABLE")
+        return "ok"
+
+    assert con_tentativi(genera, "p", tentativi=3, pausa_s=0) == "ok" and len(chiamate) == 3
+
+
+def test_tentativi_finiti_rilancia():
+    import pytest
+    from agente.spiegazione import con_tentativi
+
+    def sempre_rotto(prompt):
+        raise RuntimeError("503")
+
+    with pytest.raises(RuntimeError):
+        con_tentativi(sempre_rotto, "p", tentativi=2, pausa_s=0)
