@@ -7,7 +7,7 @@ import pytest
 
 from agente import dati
 from agente.dati import (
-    DatiNonDisponibili, scarica_chiusure, scarica_notizie, scarica_prezzi, scarica_prezzi_giorno,
+    DatiNonDisponibili, scarica_chiusure, scarica_dal, scarica_notizie, scarica_prezzi,
 )
 
 
@@ -59,12 +59,19 @@ def test_download_vuoto_e_errore(monkeypatch):
         scarica_prezzi(["AAA"], 1, date(2030, 1, 1), pausa_s=0)
 
 
-def test_prezzi_giorno(monkeypatch):
+def test_scarica_dal(monkeypatch):
+    chiesto = {}
     t = tabella(5)
-    t.loc[t.index[2], "Open"] = 9.0
-    giorno = t.index[2].date()
-    monkeypatch.setattr(dati.yf, "download", download_finto({"AAA": t, "BBB": tabella(5, np.nan)}))
-    assert scarica_prezzi_giorno(["AAA", "BBB"], giorno) == {"AAA": (9.0, 10.0)}
+    t.loc[t.index[1], "Close"] = np.nan
+
+    def finto(simboli, **kwargs):
+        chiesto.update(kwargs)
+        return download_finto({"AAA": t, "BBB": tabella(5, np.nan)})(simboli)
+
+    monkeypatch.setattr(dati.yf, "download", finto)
+    risultato = scarica_dal(["AAA", "BBB"], date(2026, 9, 1))
+    assert chiesto["start"] == "2026-09-01"
+    assert set(risultato) == {"AAA"} and len(risultato["AAA"]) == 4
 
 
 def voce(titolo, ore_fa, adesso):

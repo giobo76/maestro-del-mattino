@@ -85,17 +85,14 @@ def scarica_chiusure(simbolo: str, dal: date) -> pd.Series:
     return df["Close"]
 
 
-def scarica_prezzi_giorno(simboli: list[str], giorno: date) -> dict[str, tuple[float, float]]:
-    tabella = _scarica(simboli, 3, 5, start=giorno.isoformat(),
-                       end=(giorno + timedelta(days=1)).isoformat())
+def scarica_dal(simboli: list[str], dal: date) -> dict[str, pd.DataFrame]:
+    """Barre giornaliere da `dal` a oggi, per il controllo serale delle operazioni."""
+    tabella = _scarica(simboli, 3, 5, start=dal.isoformat())
     risultato = {}
     for simbolo in simboli:
         df = _per_simbolo(tabella, simbolo)
-        if df is None:
-            continue
-        riga = df[df.index == pd.Timestamp(giorno)]
-        if not riga.empty:
-            risultato[simbolo] = (float(riga["Open"].iloc[0]), float(riga["Close"].iloc[0]))
+        if df is not None and not df.empty:
+            risultato[simbolo] = df
     return risultato
 
 
