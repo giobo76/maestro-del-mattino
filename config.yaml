@@ -1,0 +1,177 @@
+# Impostazioni dell'agente "Maestro del mattino"
+
+soglia_prob: 0.55        # probabilità minima per consigliare un titolo
+casi_minimi: 30          # situazioni viste meno volte vengono scartate
+casi_virtuali: 30        # correzione verso la media quando i casi sono pochi
+anni_storico: 5
+gemini_modello: gemini-2.5-flash
+
+conto_simulato_eur: 1000
+ibkr_capitale_eur: 100
+ibkr_mercati: [USA]
+
+# Costi IBKR (piano Tiered) - da verificare sul conto di Giovanni
+costi:
+  ita_pct: 0.0005
+  ita_minimo_eur: 1.25
+  usa_per_azione_usd: 0.0035
+  usa_minimo_usd: 0.35
+  usa_massimo_pct: 0.01
+  cambio_pct: 0.0003
+  tasse_pct: 0.26
+
+mercati:
+  ITA:
+    nome: Borsa Italiana
+    calendario: XMIL
+    indice: FTSEMIB.MI
+    valuta: EUR
+    lingua_notizie: it
+    titoli:
+      A2A.MI: A2A
+      AMP.MI: Amplifon
+      AZM.MI: Azimut
+      BAMI.MI: Banco BPM
+      BMED.MI: Banca Mediolanum
+      BMPS.MI: Monte dei Paschi
+      BPE.MI: BPER Banca
+      BZU.MI: Buzzi
+      CPR.MI: Campari
+      DIA.MI: DiaSorin
+      ENEL.MI: Enel
+      ENI.MI: Eni
+      ERG.MI: ERG
+      RACE.MI: Ferrari
+      FBK.MI: FinecoBank
+      G.MI: Generali
+      HER.MI: Hera
+      IP.MI: Interpump
+      ISP.MI: Intesa Sanpaolo
+      INW.MI: Inwit
+      IG.MI: Italgas
+      LDO.MI: Leonardo
+      MB.MI: Mediobanca
+      MONC.MI: Moncler
+      NEXI.MI: Nexi
+      PIRC.MI: Pirelli
+      PST.MI: Poste Italiane
+      PRY.MI: Prysmian
+      REC.MI: Recordati
+      SRG.MI: Snam
+      SPM.MI: Saipem
+      STLAM.MI: Stellantis
+      STMMI.MI: STMicroelectronics
+      TIT.MI: Telecom Italia
+      TEN.MI: Tenaris
+      TRN.MI: Terna
+      UCG.MI: UniCredit
+      UNI.MI: Unipol
+      BC.MI: Brunello Cucinelli
+      AVIO.MI: Avio
+  USA:
+    nome: Stati Uniti
+    calendario: XNYS
+    indice: ^GSPC
+    valuta: USD
+    lingua_notizie: en
+    titoli:
+      AAPL: Apple
+      MSFT: Microsoft
+      NVDA: Nvidia
+      AMZN: Amazon
+      GOOGL: Alphabet (Google)
+      META: Meta
+      TSLA: Tesla
+      AVGO: Broadcom
+      JPM: JPMorgan Chase
+      V: Visa
+      MA: Mastercard
+      UNH: UnitedHealth
+      XOM: Exxon Mobil
+      LLY: Eli Lilly
+      JNJ: Johnson & Johnson
+      PG: Procter & Gamble
+      HD: Home Depot
+      COST: Costco
+      ABBV: AbbVie
+      MRK: Merck
+      CVX: Chevron
+      KO: Coca-Cola
+      PEP: PepsiCo
+      BAC: Bank of America
+      WMT: Walmart
+      NFLX: Netflix
+      AMD: AMD
+      ADBE: Adobe
+      CRM: Salesforce
+      ORCL: Oracle
+      CSCO: Cisco
+      INTC: Intel
+      QCOM: Qualcomm
+      TXN: Texas Instruments
+      IBM: IBM
+      MU: Micron
+      AMAT: Applied Materials
+      LRCX: Lam Research
+      KLAC: KLA
+      PANW: Palo Alto Networks
+      NOW: ServiceNow
+      UBER: Uber
+      PYPL: PayPal
+      SBUX: Starbucks
+      NKE: Nike
+      MCD: McDonald's
+      DIS: Disney
+      CMCSA: Comcast
+      T: AT&T
+      VZ: Verizon
+      PFE: Pfizer
+      BMY: Bristol-Myers Squibb
+      GILD: Gilead
+      AMGN: Amgen
+      TMO: Thermo Fisher
+      ABT: Abbott
+      DHR: Danaher
+      MDT: Medtronic
+      ISRG: Intuitive Surgical
+      CVS: CVS Health
+      CI: Cigna
+      GS: Goldman Sachs
+      MS: Morgan Stanley
+      C: Citigroup
+      WFC: Wells Fargo
+      SCHW: Charles Schwab
+      AXP: American Express
+      BLK: BlackRock
+      BA: Boeing
+      CAT: Caterpillar
+      DE: Deere
+      GE: GE Aerospace
+      HON: Honeywell
+      LMT: Lockheed Martin
+      RTX: RTX
+      UPS: UPS
+      FDX: FedEx
+      UNP: Union Pacific
+      F: Ford
+      GM: General Motors
+      COP: ConocoPhillips
+      SLB: Schlumberger
+      OXY: Occidental Petroleum
+      NEE: NextEra Energy
+      DUK: Duke Energy
+      SO: Southern Company
+      LIN: Linde
+      PLD: Prologis
+      AMT: American Tower
+      BKNG: Booking
+      ABNB: Airbnb
+      MRNA: Moderna
+      PLTR: Palantir
+      SHOP: Shopify
+      COIN: Coinbase
+      SNOW: Snowflake
+      CRWD: CrowdStrike
+      DELL: Dell
+      SMCI: Super Micro Computer
+      ARM: Arm Holdings

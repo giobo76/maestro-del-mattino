@@ -1,0 +1,6 @@
+.venv/
+sito/
+__pycache__/
+.env
+.superpowers/
+.pytest_cache/
