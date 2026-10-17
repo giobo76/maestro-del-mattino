@@ -71,14 +71,18 @@ def giudica_notizie(cervello: Cervello | None, nome: str, notizie: list[Notizia]
     return giudizio if giudizio in GIUDIZI else None
 
 
+def _pct(valore: float, decimali: int, segno: str = "") -> str:
+    return f"{valore * 100:{segno}.{decimali}f}%".replace(".", ",")
+
+
 def scrivi_testi(cervello: Cervello | None, scheda: dict, parole_gia_usate: list[str]) -> dict | None:
     notizie = "\n".join(f"- {t}" for t in scheda.get("notizie", [])) or "- nessuna notizia"
     prompt = (
         "Scheda del titolo del giorno:\n"
         f"Titolo: {scheda['nome']} ({scheda['mercato']})\n"
-        f"Probabilità storica di salire tra apertura e chiusura: {scheda['prob'] * 100:.1f}% "
+        f"Probabilità storica di salire tra apertura e chiusura: {_pct(scheda['prob'], 1)} "
         f"su {scheda['casi']} casi simili\n"
-        f"Guadagno medio storico in questi casi: {scheda['rend_medio'] * 100:.2f}%\n"
+        f"Guadagno medio storico in questi casi: {_pct(scheda['rend_medio'], 2, '+')}\n"
         f"Segnali: {scheda['situazione']}\n"
         f"Notizie delle ultime 24 ore:\n{notizie}\n\n"
         "Scrivi per un principiante, in italiano semplice. Rispondi solo con JSON con le chiavi "
@@ -88,7 +92,8 @@ def scrivi_testi(cervello: Cervello | None, scheda: dict, parole_gia_usate: list
         "'parola': un termine tecnico presente nella scheda e non in questo elenco: "
         f"{', '.join(parole_gia_usate) or 'nessuno'}. "
         "'parola_spiegazione': spiegazione con un esempio, massimo 3 frasi. "
-        "Non scrivere numeri diversi da quelli della scheda. Non promettere guadagni."
+        "Non scrivere numeri diversi da quelli della scheda e scrivili all'italiana, con la virgola. "
+        "Non promettere guadagni."
     )
     risposta = _chiedi_json(cervello, prompt)
     if risposta is None or not all(isinstance(risposta.get(k), str) and risposta[k].strip()

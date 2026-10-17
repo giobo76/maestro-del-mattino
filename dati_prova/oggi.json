@@ -3,37 +3,149 @@
   "schede": [
     {
       "mercato": "ITA",
-      "simbolo": null,
-      "nome": null,
-      "prob": null,
-      "casi": null,
-      "rend_medio": null,
-      "situazione": null,
-      "giudizio_notizie": null,
-      "notizie": [],
+      "simbolo": "CPR.MI",
+      "nome": "Campari",
+      "prob": 0.5236606309501587,
+      "casi": 457,
+      "rend_medio": 0.0003381532715137,
+      "situazione": "trend=su|rsi=alto|macd=nessuno|vol=normale|rottura=si|giorno=forte_su",
+      "giudizio_notizie": "neutro",
+      "notizie": [
+        {
+          "titolo": "Il Dopolavoro giovedì ha chiuso per lavori: è finita l’era di \"Baky\" - Prima la Martesana",
+          "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOSHpJTkVIMVBCOVVpZTlGT0N2MmNIZHgtRnpYZ21NblFXVlprbjEwU2o4LUNaRkFoYmtLRDlDTHFXMnRKU2pIUGdXdjU3dmdwcHhZQjhyZFlOb0FhUW5TVURmOGRLZnVvX0tuMVVXcm95VkR6QXZ4MmI0NXRkTjhNd2E1RHpTMDFfMlZYT09HN0dRb0sxeGdQcVV3bTdzQ1I2M1Rrag?oc=5",
+          "fonte": "Prima la Martesana",
+          "data": "2026-10-17 08:00:04+00:00"
+        },
+        {
+          "titolo": "Cavaliere - Federazione Italiana Sport Equestri",
+          "link": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOTGtmcW53eHpEOW5zVFBKajhMV0lKNUdvVzFLX3JJOVpwTVpRY0w0aDlaZTFkZnNDN1NzMzloa2RHcWZ1djN0bVpiazJoRlpENDUteVJTb181SURsUUpQNzFOdjZ3bzItUTNWVTRxX012ZmNnSEdSY1pSREhvTTh4RGdqX0daSDVnaEFpLVFrbVowczRVSWdXYTdqWXo3UkZmUlgyMHpQRQ?oc=5",
+          "fonte": "Federazione Italiana Sport Equestri",
+          "data": "2026-10-16 19:26:21+00:00"
+        },
+        {
+          "titolo": "Cavallo - Federazione Italiana Sport Equestri",
+          "link": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNZUJielE5d3RuLUhEZEVCMFJkZDJfbEFDdEZIdkJWMUlkMnVpRFJ1WkoxeTZIb3FpU204bTc2endQMnJxMkdaQjhueEI0NGhVMU5hODBTeXB6V2FUQ01ZMl9aM0JBbVpvMnlZT2dWbkVVdmhyU1k0em5ZdWRIdm9IamRFWVVzcUtXN1B1RmU3M2swRlJ6SDRpUlVUZ2dDYW5kREE?oc=5",
+          "fonte": "Federazione Italiana Sport Equestri",
+          "data": "2026-10-16 15:52:15+00:00"
+        },
+        {
+          "titolo": "La trattoria a Milano che non è trappola per turisti: che risotto! - Scatti di Gusto",
+          "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBET2lqUzZaY1BMMjNqalF0ekZXTG5mZTR6R1llbkZGWXBqaHlzclFwTnZzRUVJbFNkUlplR0JXX1JyMHRpWmwwbUNDWWl6Q2FkVjBKUUJKSkhBVkRicmJzTXNpUVBnVWtfQ2RaOFY0MWM?oc=5",
+          "fonte": "Scatti di Gusto",
+          "data": "2026-10-16 10:48:16+00:00"
+        },
+        {
+          "titolo": "Bluegem rileva Rispo per portare all'estero la pinsa e la focaccia romana surgelate - Quotidiano Nazionale",
+          "link": "https://news.google.com/rss/articles/CBMikAFBVV95cUxQNlRwckxUQ3dTU0lSUUJ2Q2I0X1dfUjhXZlVqY3VlVjgtOU5EQl92SUlVVVpBQjN5N1RVVFNISUUtM09na1I4dG1UNXhYeFdYd3owXzZqYzJJSVp5N0FEbnRpcWZuQ2phQzl6UzZLVmJKSnZYYUJCZHhJRWs3TTJXZlp3Q2U0Y0x6VWNQdGctMV8?oc=5",
+          "fonte": "Quotidiano Nazionale",
+          "data": "2026-10-16 10:42:13+00:00"
+        },
+        {
+          "titolo": "Lamezia, \"TRATTO Design Days\": tutto pronto dal 23 al 25 ottobre per il festival dedicato alla cultura del progetto - il Lametino.it",
+          "link": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxOSFVtdm9KZmdvaWc4MTltdEwtV2NhV3pDMkE3VUh5OVNtTW5iVm1vMGN2SnpGREJOZzVOLUFzalFnQjhjZWdyX2hqOGlEY1RFRWpuZzFnd2RvMTJtOEg0aTAySHBTbGVpLTk0eW5yd21PRzdaY3dZMmp5azYzTmsybWwxRlhqcHFIQ3dxOXZiMlhsd1BBYnM0c294ZXE0ZjZzaXR4NlRRNUtYSjNIY2dsXzZYVy1SV2dCTWZJNzRnSnEzQXZyVXBhUmRTR0VyMnlfaHZScVlwd0p2c1lESHFmOQ?oc=5",
+          "fonte": "il Lametino.it",
+          "data": "2026-10-16 10:15:53+00:00"
+        }
+      ],
       "scartati": [],
-      "nota": "Oggi nessun titolo supera il 55% di probabilità storica: meglio stare fermi.",
+      "sotto_soglia": true,
+      "nota": "Sotto soglia: solo per studio, non per investire.",
       "nome_mercato": "Borsa Italiana",
       "valuta": "EUR",
-      "grafico": null,
-      "testi": null
+      "grafico": "dati_prova\\grafici\\ITA.png",
+      "testi": {
+        "perche": "Il titolo Campari mostra un trend positivo, supportato da una recente rottura tecnica e da un'impostazione giornaliera forte. Nei 457 casi storici simili a questo, l'azione ha chiuso in rialzo nel 52.4% delle volte, con un guadagno medio dello 0.03%. Tuttavia, l'indicatore RSI è alto, segnalando che il prezzo è cresciuto molto velocemente. Le notizie delle ultime ventiquattro ore non evidenziano novità societarie dirette, quindi l'andamento dipenderà essenzialmente dai movimenti tecnici del mercato.",
+        "rischio": "Dato che l'indicatore RSI è già elevato e il guadagno medio storico è appena dello 0.03%, il rischio principale è che gli investitori decidano di incassare i profitti recenti provocando un calo improvviso del prezzo.",
+        "parola": "RSI",
+        "parola_spiegazione": "L'RSI è un indicatore che misura quanto velocemente e intensamente il prezzo di un'azione è salito o sceso di recente. Quando è alto, indica che il titolo è stato acquistato molto e potrebbe avere bisogno di una pausa. Immagina un corridore che scatta a tutta velocità: prima o poi dovrà rallentare per riprendere fiato."
+      },
+      "prezzo_ieri": 6.619999885559082
     },
     {
       "mercato": "USA",
-      "simbolo": null,
-      "nome": null,
-      "prob": null,
-      "casi": null,
-      "rend_medio": null,
-      "situazione": null,
-      "giudizio_notizie": null,
-      "notizie": [],
+      "simbolo": "PLTR",
+      "nome": "Palantir",
+      "prob": 0.5495258600015267,
+      "casi": 340,
+      "rend_medio": -0.0016991182585391,
+      "situazione": "trend=misto|rsi=normale|macd=ribasso|vol=normale|rottura=no|giorno=forte_giu",
+      "giudizio_notizie": "neutro",
+      "notizie": [
+        {
+          "titolo": "Cathie Wood-Led Ark Invest's Biggest Q3 Winners And Losers — PLTR, NVDA, TXG Led While TSLA, RKLB Dragged",
+          "link": "https://stocktwits.com/news-articles/markets/equity/cathie-wood-ark-invest-biggest-q3-winners-losers-pltr-nvda-txg-tsla-rklb/cZxkcykRBtO?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-17 08:29:33+00:00"
+        },
+        {
+          "titolo": "Palantir (NASDAQ:PLTR) Stock Plunges 7% as AI Selloff Spreads to Software - Stocks Down Under",
+          "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1keTBIeEhxeHFLWjBna2p4TWdjTUIzb1BRN3A3V0VhTlVIRE1vWGJESHpacTdPZHZGMURSS05nMnRpYTdkWDJBdWIzeEwtUjZHXzBuLWFobzF2N1pyRkR1MUlBdGpGalZFeno4SXh1MXpTVjlKYVEyWGtHMA?oc=5",
+          "fonte": "Stocks Down Under",
+          "data": "2026-10-17 08:15:13+00:00"
+        },
+        {
+          "titolo": "Palantir schedules third-quarter results for November 2 - ad-hoc-news.de",
+          "link": "https://news.google.com/rss/articles/CBMiugFBVV95cUxNN3lCMlc5eG5JT1B0VFhtVEVCa3ZEQVpMOXNPQzlOeldWTTltX3k1UWxENERNdnlXaVBtaUdraGdqOGVWN0hOSDNUT190Q0VQa2EwdlJzeVdnam92OHVRRWNsVDNyellyZ016ZHdDcHNpdDJmRmpQcHV6UlFOb1QtSzRtNTRXODRMYlBJVmVGNHFONlNCcDlPMlFCRGFuUERCSHQ4VDBEZmdRQnRqaE5SRkxHTEdUX0lfRGc?oc=5",
+          "fonte": "ad-hoc-news.de",
+          "data": "2026-10-17 08:03:09+00:00"
+        },
+        {
+          "titolo": "Palantir Technologies Inc. Tokenized Stock (Coinbase) - CryptoRank",
+          "link": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPaWp2M1N6Q1pjWWRpT1ZnZ2gxdXM5YzVMY29icFdXREV4SS1RWUFqUkRQbTRCT2hfOEh4X3hfNmIxQmZmQUMxaGxrbWhpd1h1blByUU9tYW9wandnQTFuR05qdi1PeW1PenF3Z2wtcHU4TlItcFlwR1JQQmw1YTlxcTMyMGY?oc=5",
+          "fonte": "CryptoRank",
+          "data": "2026-10-17 06:23:25+00:00"
+        },
+        {
+          "titolo": "Palantir patient data tech rejected by many NHS trusts in England - The Guardian",
+          "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNWTRqdnpXQ2ZSM0pGMlY2Q0RJUncxenJHcC1fdEI1Sm1qWkhSNUxBNDJFQ0RYSXgxbnV2dDhjSUVqTEpQSmZ2dUx3aVJqZzl2LU5Pc3Rlb3c1cHYtQ0psZkZCVkNPVHhmTC1BYmlYTFVFVFR2WDhESzhEbFZJeGgzWWZsQ1prZXMtNDkyeFJQaFJfYWo3UEdobEJuWVJLWWp4TnpDaHktdVdsVHpsMXBqMWc2aV8yRzg?oc=5",
+          "fonte": "The Guardian",
+          "data": "2026-10-17 06:00:00+00:00"
+        },
+        {
+          "titolo": "Missed Out On Micron and Sandisk? Make Sure You Don't Miss Out On This Memory Stock.",
+          "link": "https://www.fool.com/investing/2026/10/17/missed-out-on-micron-and-sandisk-make-sure-you-don/?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-17 05:50:00+00:00"
+        },
+        {
+          "titolo": "Stocktwits Defense Watch: RTX Continues Deal Momentum, Ondas-Palantir Launch AI Firm As AeroVironment Strike Four International Deals",
+          "link": "https://stocktwits.com/news-articles/markets/equity/rtx-counter-drone-orders-aerovironment-palantir-defense-ai/cZxjx4bRBtI?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-17 04:15:47+00:00"
+        },
+        {
+          "titolo": "RTX, AeroVironment And Ondas-Palantir Push Deeper Into Drone Defense And AI This Week - Stocktwits",
+          "link": "https://news.google.com/rss/articles/CBMivwFBVV95cUxPNzI0NHBFYXVMOWYtSW5oejF1OUdVSFBXSG9YSmRydDVlZ182LThva0t4S3p1clU1cWxtWFlzeGdldWpoY2YweU5LWlp2M1J2eTJFdi0zUmxiclh2VEQzeHZiU3cxdm5kaUt4NEVscXJVVVBZQWVjaEVhaUh1XzJfRU1JWDJZSEI1RlduSElaSzEyN2VWenRPWUwwdmpuaFpIR1EwTnNGWVdtMlE4eGVQTlhfaExXb2FhYVV6UmRSQQ?oc=5",
+          "fonte": "Stocktwits",
+          "data": "2026-10-17 04:15:00+00:00"
+        },
+        {
+          "titolo": "Stocktwits Defense Watch: RTX Continues Deal Momentum, Ondas-Palantir Launch AI Firm As AeroVironment Strike Four International Deals - Yahoo Finance",
+          "link": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNREVSUF9QTzEtLV9CRUZJcnpjeHdvbWc1c3l3d1Z3bDROdzVxNFg3amR4MWN0eVhmRlF2a0EwbHk3S01LdVFzRkxPZlNKRWEzSmdDbkxTLUN2LWhxMk9PVnM0UnJ3RUtvNGpmbWd2YjRPWFc0Z21IajVPaVFyTEdER1pGOEtuSVRYSDh6eks1aC0zMTNVaW5oR0d1NDBYSmNsUnJvUlNB?oc=5",
+          "fonte": "Yahoo Finance",
+          "data": "2026-10-17 04:15:00+00:00"
+        },
+        {
+          "titolo": "Why You Should Think About Palantir Differently Now",
+          "link": "https://www.trefis.com/articles/618984/why-you-should-think-about-palantir-differently-now/2026-10-16?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-17 02:50:36+00:00"
+        }
+      ],
       "scartati": [],
-      "nota": "Oggi nessun titolo supera il 55% di probabilità storica: meglio stare fermi.",
+      "sotto_soglia": true,
+      "nota": "Sotto soglia: solo per studio, non per investire.",
       "nome_mercato": "Stati Uniti",
       "valuta": "USD",
-      "grafico": null,
-      "testi": null
+      "grafico": "dati_prova\\grafici\\USA.png",
+      "testi": {
+        "perche": "Storicamente, in 340 casi simili, Palantir ha registrato una probabilità del 55.0% di salire tra apertura e chiusura, pur con un guadagno medio storico leggermente negativo pari a -0.17%. Il quadro tecnico attuale appare incerto, poiché mostra un trend misto e un indicatore MACD orientato al ribasso dopo una seduta chiusa in forte calo. Nelle ultime ore pesano le notizie legate a vendite diffuse sui titoli legati all'intelligenza artificiale e le difficoltà con alcuni contratti sanitari all'estero. Allo stesso tempo, l'interesse per i nuovi accordi nel settore della difesa e l'attesa per i prossimi risultati trimestrali continuano ad attirare l'attenzione del mercato.",
+        "rischio": "Il rischio principale è che il proseguire delle vendite sul settore tecnologico e l'impostazione debole dei segnali tecnici continuino a spingere il prezzo al ribasso.",
+        "parola": "MACD",
+        "parola_spiegazione": "Il MACD è uno strumento di analisi che confronta il prezzo recente con quello passato per capire la forza e la direzione di un movimento. Ad esempio, se il MACD segnala un ribasso, indica che negli ultimi giorni la spinta di chi vende sta prevalendo su quella di chi compra."
+      },
+      "prezzo_ieri": 186.02999877929688
     }
   ],
   "fatto_mattina": "2026-10-19",

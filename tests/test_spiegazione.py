@@ -64,4 +64,4 @@ def test_cervello_none():
 def test_prompt_contiene_parole_usate():
     cervello = CervelloFinto(TESTI_OK)
     scrivi_testi(cervello, SCHEDA, ["RSI", "volumi"])
-    assert "RSI" in cervello.prompt[0] and "57" in cervello.prompt[0]
+    assert "RSI" in cervello.prompt[0] and "57,0%" in cervello.prompt[0] and "+0,40%" in cervello.prompt[0]
