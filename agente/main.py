@@ -12,32 +12,38 @@ from typing import Callable
 import pandas as pd
 
 from agente import dati
-from agente.archivio import (
-    aggiungi_previsioni, leggi_oggi, leggi_previsioni, salva_oggi, salva_previsioni,
-)
+from agente.archivio import leggi_oggi, salva_oggi
 from agente.calendario import ROMA, adesso_roma, borsa_aperta, seduta_chiusa, seduta_precedente
 from agente.config import Config, carica_config
 from agente.dati import DatiNonDisponibili
+from agente.operazione import Operazione
+from agente.operazioni import (
+    aggiorna_operazioni, aperta_nel_mercato, leggi_operazioni, nuova_operazione, salva_operazioni,
+)
 from agente.pagina import disegna_grafico, genera_sito
-from agente.probabilita import costruisci_tabella, prepara_storico, prova_fuori_campione
+from agente.posta import email_mattina, email_sera, invia
 from agente.scelta import scegli
 from agente.spiegazione import Cervello, crea_cervello, giudica_notizie, scrivi_testi
-from agente.statistiche import calcola_statistiche
-from agente.verifica import registra_esiti
+from agente.statistiche import calcola_statistiche, quantita
+from agente.storico_r import costruisci_tabella_r, prova_fuori_campione_r, simula_storico
 
 log = logging.getLogger("agente")
 
 ORA_INIZIO = {"mattina": 7, "sera": 22}
+URL_PAGINA = "https://giobo76.github.io/maestro-del-mattino/"
+STATI_LEGGIBILI = {"in attesa": "in attesa dell'apertura", "aperta": "aperta", "meta chiusa": "metà già venduta",
+                   "uscita domani": "da chiudere all'apertura"}
 
 
 @dataclass
 class Servizi:
     scarica_prezzi: Callable
-    scarica_prezzi_giorno: Callable
+    scarica_dal: Callable[[list[str], date], dict[str, pd.DataFrame]]
     scarica_notizie: Callable
     cervello: Cervello | None
     cambi: Callable[[date, date], dict[date, float]]
     indici: Callable[[str, date], pd.Series | None]
+    invia: Callable[[str, str], bool]
     adesso: Callable[[], datetime] = lambda: datetime.now(timezone.utc)
 
 
@@ -54,13 +60,15 @@ def _cambi(dal: date, al: date) -> dict[date, float]:
 
 
 def servizi_reali(cfg: Config) -> Servizi:
+    chiave = os.environ.get("RESEND_API_KEY")
     return Servizi(
         scarica_prezzi=dati.scarica_prezzi,
-        scarica_prezzi_giorno=dati.scarica_prezzi_giorno,
+        scarica_dal=dati.scarica_dal,
         scarica_notizie=dati.scarica_notizie,
         cervello=crea_cervello(cfg),
         cambi=_cambi,
         indici=_chiusure,
+        invia=lambda oggetto, html: invia(oggetto, html, cfg.email_destinatario, chiave),
     )
 
 
@@ -76,11 +84,15 @@ def esegui_tabella(cfg: Config, cartella_dati: Path, oggi: date, servizi: Serviz
     cartella_dati.mkdir(parents=True, exist_ok=True)
     for codice, mercato in cfg.mercati.items():
         log.info("Tabella storica %s: scarico %d anni", codice, cfg.anni_storico)
-        prezzi = servizi.scarica_prezzi(list(mercato.titoli), cfg.anni_storico, oggi)
-        storico = prepara_storico(prezzi)
-        tabella = costruisci_tabella(storico, None, cfg.casi_minimi, cfg.casi_virtuali)
+        try:
+            prezzi = servizi.scarica_prezzi(list(mercato.titoli), cfg.anni_storico, oggi)
+        except DatiNonDisponibili:
+            log.error("Tabella %s non aggiornata: prezzi non disponibili", codice)
+            continue
+        storico = simula_storico(prezzi, cfg.atr_mult)
+        tabella = costruisci_tabella_r(storico, None, cfg.casi_minimi, cfg.casi_virtuali)
         tabella.to_csv(cartella_dati / f"tabella_{codice}.csv")
-        prova = prova_fuori_campione(storico, cfg.casi_minimi, cfg.casi_virtuali, cfg.soglia_prob)
+        prova = prova_fuori_campione_r(storico, cfg.casi_minimi, cfg.casi_virtuali, cfg.soglia_r)
         (cartella_dati / f"prova_{codice}.json").write_text(json.dumps(prova, indent=2), encoding="utf-8")
         log.info("Tabella %s: %d situazioni, prova fuori campione %s", codice, len(tabella), prova)
 
@@ -94,37 +106,51 @@ def _parole(cartella_dati: Path) -> list[str]:
     return json.loads(percorso.read_text(encoding="utf-8")) if percorso.exists() else []
 
 
-def _pubblica(cfg: Config, cartella_dati: Path, cartella_sito: Path, prev: pd.DataFrame,
+def _pubblica(cfg: Config, cartella_dati: Path, cartella_sito: Path, ops: list[Operazione],
               oggi_json: dict, servizi: Servizi) -> None:
     cambi, indici = {}, {}
-    conclusi = prev[prev["salito"].notna()]
-    if len(conclusi):
-        dal = date.fromisoformat(conclusi["data"].min())
-        al = date.fromisoformat(conclusi["data"].max())
-        cambi = servizi.cambi(dal, al)
+    iniziate = [o.data_ingresso for o in ops if o.data_ingresso]
+    if iniziate:
+        dal = date.fromisoformat(min(iniziate))
+        cambi = servizi.cambi(dal, date.today())
         for codice, mercato in cfg.mercati.items():
             serie = servizi.indici(mercato.indice, dal)
             if serie is not None:
                 indici[codice] = serie
-    stat = calcola_statistiche(prev, cfg, cambi, indici)
+    stat = calcola_statistiche(ops, cfg, cambi, indici)
     prova = {}
     for codice in cfg.mercati:
         percorso = cartella_dati / f"prova_{codice}.json"
         if percorso.exists():
             prova[codice] = json.loads(percorso.read_text(encoding="utf-8"))
-    genera_sito(cartella_sito, oggi_json, prev, stat, prova, adesso_roma())
+    genera_sito(cartella_sito, oggi_json, ops, stat, prova, adesso_roma())
+
+
+def _cambio_attuale(servizi: Servizi, oggi: date) -> float:
+    cambi = servizi.cambi(oggi, oggi)
+    return cambi[max(cambi)] if cambi else 1.0
 
 
 def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: date,
                    servizi: Servizi) -> None:
     if not all((cartella_dati / f"tabella_{c}.csv").exists() for c in cfg.mercati):
         esegui_tabella(cfg, cartella_dati, oggi, servizi)
+    ops = leggi_operazioni(cartella_dati / "operazioni.csv")
     parole = _parole(cartella_dati)
-    schede, scelte = [], []
+    schede = []
     for codice, mercato in cfg.mercati.items():
-        base = {"mercato": codice, "nome_mercato": mercato.nome, "valuta": mercato.valuta}
+        base = {"mercato": codice, "nome_mercato": mercato.nome, "valuta": mercato.valuta, "nuova": False}
+        aperta = aperta_nel_mercato(ops, codice)
+        if aperta is not None:
+            schede.append({**base, "simbolo": None, "posizione_id": aperta.id,
+                           "nota": f"Posizione già aperta su {aperta.nome} ({STATI_LEGGIBILI[aperta.stato]}): "
+                                   "oggi nessuna nuova operazione su questo mercato."})
+            continue
         if not borsa_aperta(mercato.calendario, oggi):
             schede.append({**base, "simbolo": None, "nota": "Borsa chiusa oggi."})
+            continue
+        if not (cartella_dati / f"tabella_{codice}.csv").exists():
+            schede.append({**base, "simbolo": None, "nota": "Dati non disponibili oggi."})
             continue
         try:
             prezzi = servizi.scarica_prezzi(list(mercato.titoli), 1, oggi,
@@ -138,44 +164,52 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             mercato, prezzi, _leggi_tabella(cartella_dati, codice),
             lambda nome, simbolo, lingua=mercato.lingua_notizie: servizi.scarica_notizie(nome, simbolo, lingua),
             lambda nome, notizie: giudica_notizie(servizi.cervello, nome, notizie),
-            cfg.soglia_prob, studio=cfg.modalita_studio)
-        scelte.append(scelta)
+            cfg.soglia_r, cfg.atr_mult, studio=cfg.modalita_studio)
         scheda = {**dataclasses.asdict(scelta), **base, "grafico": None, "testi": None}
         if scelta.simbolo:
-            df = prezzi[scelta.simbolo]
+            lv = scelta.livelli
             grafico = cartella_dati / "grafici" / f"{codice}.png"
-            disegna_grafico(df, scelta.nome, grafico)
-            scheda["grafico"] = str(grafico)
-            scheda["prezzo_ieri"] = float(df["Close"].iloc[-1])
+            disegna_grafico(prezzi[scelta.simbolo], scelta.nome, grafico, lv)
+            cambio = 1.0 if codice == "ITA" else _cambio_attuale(servizi, oggi)
+            n = quantita(codice, cfg.ibkr_capitale_eur, lv.riferimento, cambio)
             testi = scrivi_testi(servizi.cervello, {
-                "nome": scelta.nome, "mercato": mercato.nome, "prob": scelta.prob, "casi": scelta.casi,
-                "rend_medio": scelta.rend_medio, "situazione": scelta.situazione,
-                "notizie": [n.titolo for n in scelta.notizie]}, parole[-30:])
-            scheda["testi"] = testi
+                "nome": scelta.nome, "mercato": mercato.nome, "resa": scelta.resa, "casi": scelta.casi,
+                "pct_stop": scelta.pct_stop, "pct_2r": scelta.pct_2r, "situazione": scelta.situazione,
+                "livelli": dataclasses.asdict(lv), "sotto_soglia": scelta.sotto_soglia,
+                "notizie": [x.titolo for x in scelta.notizie]}, parole[-30:])
             if testi:
                 parole.append(testi["parola"])
+            op = nuova_operazione(scelta, oggi)
+            ops.append(op)
+            scheda.update(nuova=True, grafico=str(grafico), testi=testi, quantita=n,
+                          perdita_massima=n * lv.r / cambio, posizione_id=op.id)
         log.info("%s: scelto %s (%s)", codice, scelta.simbolo, scelta.nota or "ok")
         schede.append(scheda)
 
-    prev = aggiungi_previsioni(leggi_previsioni(cartella_dati / "previsioni.csv"), oggi, scelte)
-    salva_previsioni(prev, cartella_dati / "previsioni.csv")
+    salva_operazioni(ops, cartella_dati / "operazioni.csv")
     (cartella_dati / "parole.json").write_text(json.dumps(parole, ensure_ascii=False), encoding="utf-8")
     oggi_json = {"data": oggi.isoformat(), "schede": schede, "fatto_mattina": oggi.isoformat(), "fatto_sera": None}
     salva_oggi(cartella_dati / "oggi.json", oggi_json)
-    _pubblica(cfg, cartella_dati, cartella_sito, prev, leggi_oggi(cartella_dati / "oggi.json"), servizi)
+    _pubblica(cfg, cartella_dati, cartella_sito, ops, leggi_oggi(cartella_dati / "oggi.json"), servizi)
+    email = email_mattina(schede, URL_PAGINA)
+    if email:
+        servizi.invia(*email)
 
 
 def esegui_sera(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: date,
                 servizi: Servizi) -> None:
-    prev = registra_esiti(leggi_previsioni(cartella_dati / "previsioni.csv"),
-                          servizi.scarica_prezzi_giorno, oggi,
-                          chiusa=lambda m, giorno: seduta_chiusa(cfg.mercati[m].calendario, giorno,
-                                                                 servizi.adesso()))
-    salva_previsioni(prev, cartella_dati / "previsioni.csv")
+    ops = leggi_operazioni(cartella_dati / "operazioni.csv")
+    messaggi = aggiorna_operazioni(
+        ops, servizi.scarica_dal, oggi,
+        chiusa=lambda m, giorno: seduta_chiusa(cfg.mercati[m].calendario, giorno, servizi.adesso()))
+    salva_operazioni(ops, cartella_dati / "operazioni.csv")
     oggi_json = leggi_oggi(cartella_dati / "oggi.json") or {"data": oggi.isoformat(), "schede": []}
     oggi_json["fatto_sera"] = oggi.isoformat()
     salva_oggi(cartella_dati / "oggi.json", oggi_json)
-    _pubblica(cfg, cartella_dati, cartella_sito, prev, oggi_json, servizi)
+    _pubblica(cfg, cartella_dati, cartella_sito, ops, oggi_json, servizi)
+    email = email_sera(messaggi, URL_PAGINA)
+    if email:
+        servizi.invia(*email)
 
 
 def _scrivi_output(nessun_lavoro: bool) -> None:
@@ -207,7 +241,7 @@ def main(argv: list[str]) -> int:
     if argomenti.comando == "tabella":
         esegui_tabella(cfg, argomenti.dati, oggi, servizi)
         oggi_json = leggi_oggi(argomenti.dati / "oggi.json") or {"data": oggi.isoformat(), "schede": []}
-        _pubblica(cfg, argomenti.dati, argomenti.sito, leggi_previsioni(argomenti.dati / "previsioni.csv"),
+        _pubblica(cfg, argomenti.dati, argomenti.sito, leggi_operazioni(argomenti.dati / "operazioni.csv"),
                   oggi_json, servizi)
     elif argomenti.comando == "mattina":
         esegui_mattina(cfg, argomenti.dati, argomenti.sito, oggi, servizi)
