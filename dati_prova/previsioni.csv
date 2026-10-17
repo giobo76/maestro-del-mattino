@@ -1,3 +1,0 @@
-data,mercato,simbolo,nome,prob,casi,rend_medio_storico,situazione,giudizio_notizie,apertura,chiusura,rend,salito,sotto_soglia
-2026-10-19,ITA,CPR.MI,Campari,0.5236606309501587,457,0.0003381532715137,trend=su|rsi=alto|macd=nessuno|vol=normale|rottura=si|giorno=forte_su,neutro,,,,,True
-2026-10-19,USA,PLTR,Palantir,0.5495258600015267,340,-0.0016991182585391,trend=misto|rsi=normale|macd=ribasso|vol=normale|rottura=no|giorno=forte_giu,neutro,,,,,True
