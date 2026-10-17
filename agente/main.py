@@ -138,7 +138,7 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             mercato, prezzi, _leggi_tabella(cartella_dati, codice),
             lambda nome, simbolo, lingua=mercato.lingua_notizie: servizi.scarica_notizie(nome, simbolo, lingua),
             lambda nome, notizie: giudica_notizie(servizi.cervello, nome, notizie),
-            cfg.soglia_prob)
+            cfg.soglia_prob, studio=cfg.modalita_studio)
         scelte.append(scelta)
         scheda = {**dataclasses.asdict(scelta), **base, "grafico": None, "testi": None}
         if scelta.simbolo:

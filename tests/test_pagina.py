@@ -42,6 +42,11 @@ def test_pagina_contiene_scheda(tmp_path):
     assert "54,0%" in html  # prova fuori campione
 
 
+def test_pagina_sotto_soglia(tmp_path):
+    html = genera(tmp_path, [scheda(sotto_soglia=True, nota="Sotto soglia: solo per studio, non per investire.")])
+    assert "Sotto soglia: solo per studio, non per investire." in html and "Eni" in html
+
+
 def test_pagina_senza_testi(tmp_path):
     assert "Spiegazione non disponibile oggi" in genera(tmp_path, [scheda(testi=None)])
 
@@ -60,6 +65,13 @@ def test_pagina_storico(tmp_path):
     prev = aggiungi_previsioni(leggi_previsioni("non-esiste.csv"), date(2026, 10, 15),
                                [Scelta("ITA", "ENI.MI", "Eni", 0.57, 142, 0.004, "trend=su")])
     assert "in attesa" in genera(tmp_path, [scheda()], prev)
+
+
+def test_storico_segna_studio(tmp_path):
+    s = Scelta("ITA", "ENI.MI", "Eni", 0.52, 142, 0.004, "trend=su")
+    s.sotto_soglia = True
+    prev = aggiungi_previsioni(leggi_previsioni("non-esiste.csv"), date(2026, 10, 15), [s])
+    assert "52,0% (studio)" in genera(tmp_path, [scheda()], prev)
 
 
 def test_grafico_creato(tmp_path):

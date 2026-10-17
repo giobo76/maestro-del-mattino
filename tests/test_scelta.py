@@ -68,3 +68,16 @@ def test_situazione_sconosciuta_ignorata():
     prezzi, tabella = prepara({"AAA.MI": 0.58, "CCC.MI": None})
     scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55)
     assert scelta.simbolo == "AAA.MI"
+
+
+def test_modalita_studio_sotto_soglia():
+    prezzi, tabella = prepara({"AAA.MI": 0.51, "BBB.MI": 0.52})
+    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55, studio=True)
+    assert scelta.simbolo == "BBB.MI" and scelta.sotto_soglia is True
+    assert scelta.nota == "Sotto soglia: solo per studio, non per investire."
+
+
+def test_modalita_studio_sopra_soglia_normale():
+    prezzi, tabella = prepara({"AAA.MI": 0.51, "BBB.MI": 0.56})
+    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55, studio=True)
+    assert scelta.simbolo == "BBB.MI" and scelta.sotto_soglia is False and scelta.nota == ""

@@ -73,6 +73,11 @@ def calcola_statistiche(prev: pd.DataFrame, cfg: Config, cambi: dict[date, float
     conclusi = _conclusi(prev)
     stat = _conteggio(conclusi)
     stat["per_mercato"] = {m: _conteggio(conclusi[conclusi["mercato"] == m]) for m in cfg.mercati}
+    studio = conclusi["sotto_soglia"].fillna(False).astype(bool)
+    stat["sopra_soglia"] = _conteggio(conclusi[~studio])
+    stat["studio"] = _conteggio(conclusi[studio])
+    # i conti simulati seguono solo i consigli veri, sopra soglia
+    consigli = prev[~prev["sotto_soglia"].fillna(False).astype(bool)]
 
     stat["calibrazione"] = []
     for etichetta, da, a in FASCE:
@@ -83,10 +88,10 @@ def calcola_statistiche(prev: pd.DataFrame, cfg: Config, cambi: dict[date, float
             "percentuale": float(righe["salito"].mean()) if len(righe) else None})
 
     quota = cfg.conto_simulato_eur / len(cfg.mercati)
-    stat["conto_simulato"] = simula_conto(prev, {m: quota for m in cfg.mercati}, cfg.costi, cambi,
+    stat["conto_simulato"] = simula_conto(consigli, {m: quota for m in cfg.mercati}, cfg.costi, cambi,
                                           cfg.costi["tasse_pct"])
     quota_ibkr = cfg.ibkr_capitale_eur / len(cfg.ibkr_mercati)
-    stat["conto_ibkr"] = simula_conto(prev, {m: quota_ibkr for m in cfg.ibkr_mercati}, cfg.costi, cambi,
+    stat["conto_ibkr"] = simula_conto(consigli, {m: quota_ibkr for m in cfg.ibkr_mercati}, cfg.costi, cambi,
                                       cfg.costi["tasse_pct"])
 
     stat["indici"] = {}

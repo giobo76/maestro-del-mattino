@@ -44,3 +44,18 @@ def test_oggi_json(tmp_path):
     letto = leggi_oggi(percorso)
     assert letto["data"] == "2026-10-16"
     assert letto["schede"][0]["notizie"][0]["titolo"] == "t"
+
+
+def test_sotto_soglia_salvato(tmp_path):
+    percorso = tmp_path / "previsioni.csv"
+    s = scelta(prob=0.52)
+    s.sotto_soglia = True
+    salva_previsioni(aggiungi_previsioni(leggi_previsioni(percorso), date(2026, 10, 16), [s]), percorso)
+    assert bool(leggi_previsioni(percorso).iloc[0]["sotto_soglia"]) is True
+
+
+def test_file_vecchio_senza_colonna(tmp_path):
+    percorso = tmp_path / "previsioni.csv"
+    percorso.write_text("data,mercato,simbolo,nome,prob,casi,rend_medio_storico,situazione,giudizio_notizie,"
+                        "apertura,chiusura,rend,salito\n2026-10-16,ITA,ENI.MI,Eni,0.57,142,0.004,s,neutro,,,,\n")
+    assert bool(leggi_previsioni(percorso).iloc[0]["sotto_soglia"]) is False

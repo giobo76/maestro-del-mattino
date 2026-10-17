@@ -19,6 +19,7 @@ class Mercato:
 class Config:
     mercati: dict[str, Mercato]
     soglia_prob: float
+    modalita_studio: bool
     casi_minimi: int
     casi_virtuali: int
     anni_storico: int

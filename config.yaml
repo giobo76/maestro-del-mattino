@@ -1,10 +1,11 @@
 # Impostazioni dell'agente "Maestro del mattino"
 
 soglia_prob: 0.55        # probabilità minima per consigliare un titolo
+modalita_studio: true    # mostra comunque il titolo migliore, etichettato "solo per studio"
 casi_minimi: 30          # situazioni viste meno volte vengono scartate
 casi_virtuali: 30        # correzione verso la media quando i casi sono pochi
 anni_storico: 5
-gemini_modello: gemini-2.5-flash
+gemini_modello: gemini-3.8-flash
 
 conto_simulato_eur: 1000
 ibkr_capitale_eur: 100

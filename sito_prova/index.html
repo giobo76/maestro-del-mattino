@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maestro del mattino</title>
+<style>
+:root {
+  --sfondo: #f6f7f9; --carta: #ffffff; --testo: #1b1f24; --tenue: #59636e; --bordo: #d8dee4;
+  --accento: #1f6feb; --su: #1a7f37; --giu: #cf222e; --avviso: #fff8c5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sfondo: #0d1117; --carta: #161b22; --testo: #e6edf3; --tenue: #9198a1; --bordo: #30363d;
+    --accento: #4493f8; --su: #3fb950; --giu: #f85149; --avviso: #3b2e00;
+  }
+  img.grafico { filter: invert(0.92) hue-rotate(180deg); }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--sfondo); color: var(--testo);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+header h1 { margin: 8px 0 0; font-size: 1.6rem; }
+header p { margin: 4px 0 0; color: var(--tenue); font-size: .9rem; }
+nav { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+nav a { color: var(--accento); text-decoration: none; padding: 6px 12px; border: 1px solid var(--bordo);
+  border-radius: 999px; background: var(--carta); font-size: .9rem; }
+h2 { margin: 32px 0 12px; font-size: 1.3rem; }
+h3 { margin: 0 0 4px; font-size: 1.15rem; }
+h4 { margin: 16px 0 4px; font-size: .95rem; color: var(--tenue); text-transform: uppercase; letter-spacing: .03em; }
+.carta { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.mercato { color: var(--tenue); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+.prob { font-size: 2rem; font-weight: 700; color: var(--accento); margin: 8px 0 0; }
+.dettaglio { color: var(--tenue); font-size: .9rem; margin: 0; }
+.nota { background: var(--avviso); border-radius: 8px; padding: 10px 12px; margin: 12px 0 0; }
+img.grafico { width: 100%; height: auto; border-radius: 8px; margin-top: 12px; }
+ul { padding-left: 20px; margin: 4px 0; }
+.parola { border-left: 4px solid var(--accento); padding-left: 12px; }
+.tabella { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--bordo); white-space: nowrap; }
+th { color: var(--tenue); font-weight: 600; }
+.cifre { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.cifra { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 12px; }
+.cifra b { display: block; font-size: 1.4rem; }
+.cifra span { color: var(--tenue); font-size: .85rem; }
+.su { color: var(--su); } .giu { color: var(--giu); }
+footer { margin: 40px 0 24px; color: var(--tenue); font-size: .85rem; text-align: center; }
+a { color: var(--accento); }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Maestro del mattino</h1>
+  <p>Aggiornato il 17/10/2026 alle 11:15</p>
+</header>
+<nav><a href="#oggi">Oggi</a><a href="#storico">Com'è andata</a><a href="#statistiche">Statistiche</a></nav>
+
+<section id="oggi">
+<h2>Oggi</h2>
+
+<article class="carta">
+  <div class="mercato">Borsa Italiana</div>
+  
+  <p class="nota">Oggi nessun titolo supera il 55% di probabilità storica: meglio stare fermi.</p>
+</article>
+
+<article class="carta">
+  <div class="mercato">Stati Uniti</div>
+  
+  <p class="nota">Oggi nessun titolo supera il 55% di probabilità storica: meglio stare fermi.</p>
+</article>
+
+</section>
+
+<section id="storico">
+<h2>Com'è andata</h2>
+<p class="carta">Ancora nessuna previsione.</p>
+</section>
+
+<section id="statistiche">
+<h2>Statistiche</h2>
+
+<p class="carta">Ancora nessun risultato: le statistiche compaiono dopo la prima verifica serale.</p>
+
+
+
+<div class="carta">
+  <h4>Prova sull'ultimo anno (dati che il calcolo non aveva visto)</h4>
+  
+  <p><b>Borsa Italiana</b>, dal 2025-10-17 al 2026-10-16:
+  
+    48 giorni con un consiglio, probabilità media annunciata 56,0%,
+    risultato reale 41,7%, guadagno medio per giorno −0,42% (prima dei costi).
+  </p>
+  
+  <p><b>Stati Uniti</b>, dal 2025-10-17 al 2026-10-16:
+  
+    133 giorni con un consiglio, probabilità media annunciata 57,4%,
+    risultato reale 46,6%, guadagno medio per giorno +0,12% (prima dei costi).
+  </p>
+  
+  <p class="dettaglio">I segnali migliori arrivano di solito al 53–60% di probabilità.</p>
+</div>
+
+</section>
+
+<footer>Strumento personale a scopo didattico. Non è una consulenza finanziaria.</footer>
+</main>
+</body>
+</html>

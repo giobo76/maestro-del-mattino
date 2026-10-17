@@ -1,0 +1,41 @@
+{
+  "data": "2026-10-19",
+  "schede": [
+    {
+      "mercato": "ITA",
+      "simbolo": null,
+      "nome": null,
+      "prob": null,
+      "casi": null,
+      "rend_medio": null,
+      "situazione": null,
+      "giudizio_notizie": null,
+      "notizie": [],
+      "scartati": [],
+      "nota": "Oggi nessun titolo supera il 55% di probabilità storica: meglio stare fermi.",
+      "nome_mercato": "Borsa Italiana",
+      "valuta": "EUR",
+      "grafico": null,
+      "testi": null
+    },
+    {
+      "mercato": "USA",
+      "simbolo": null,
+      "nome": null,
+      "prob": null,
+      "casi": null,
+      "rend_medio": null,
+      "situazione": null,
+      "giudizio_notizie": null,
+      "notizie": [],
+      "scartati": [],
+      "nota": "Oggi nessun titolo supera il 55% di probabilità storica: meglio stare fermi.",
+      "nome_mercato": "Stati Uniti",
+      "valuta": "USD",
+      "grafico": null,
+      "testi": null
+    }
+  ],
+  "fatto_mattina": "2026-10-19",
+  "fatto_sera": null
+}

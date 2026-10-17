@@ -9,11 +9,11 @@ import pandas as pd
 from agente.scelta import Scelta
 
 COLONNE = ["data", "mercato", "simbolo", "nome", "prob", "casi", "rend_medio_storico", "situazione",
-           "giudizio_notizie", "apertura", "chiusura", "rend", "salito"]
+           "giudizio_notizie", "apertura", "chiusura", "rend", "salito", "sotto_soglia"]
 TIPI = {"data": "string", "mercato": "string", "simbolo": "string", "nome": "string",
         "prob": "float64", "casi": "Int64", "rend_medio_storico": "float64", "situazione": "string",
         "giudizio_notizie": "string", "apertura": "float64", "chiusura": "float64",
-        "rend": "float64", "salito": "boolean"}
+        "rend": "float64", "salito": "boolean", "sotto_soglia": "boolean"}
 
 
 def _vuoto() -> pd.DataFrame:
@@ -23,7 +23,11 @@ def _vuoto() -> pd.DataFrame:
 def leggi_previsioni(percorso) -> pd.DataFrame:
     if not Path(percorso).exists():
         return _vuoto()
-    return pd.read_csv(percorso, dtype=TIPI)[COLONNE]
+    prev = pd.read_csv(percorso, dtype=TIPI)
+    if "sotto_soglia" not in prev.columns:  # file creati prima della modalità studio
+        prev["sotto_soglia"] = pd.Series(False, index=prev.index, dtype="boolean")
+    prev["sotto_soglia"] = prev["sotto_soglia"].fillna(False)
+    return prev[COLONNE]
 
 
 def aggiungi_previsioni(prev: pd.DataFrame, giorno: date, scelte: list[Scelta]) -> pd.DataFrame:
@@ -33,7 +37,7 @@ def aggiungi_previsioni(prev: pd.DataFrame, giorno: date, scelte: list[Scelta]) 
     nuove = pd.DataFrame([{
         "data": data, "mercato": s.mercato, "simbolo": s.simbolo, "nome": s.nome, "prob": s.prob,
         "casi": s.casi, "rend_medio_storico": s.rend_medio, "situazione": s.situazione,
-        "giudizio_notizie": s.giudizio_notizie,
+        "giudizio_notizie": s.giudizio_notizie, "sotto_soglia": s.sotto_soglia,
     } for s in scelte if s.simbolo], columns=COLONNE)
     if nuove.empty:
         return restanti.reset_index(drop=True)

@@ -44,6 +44,7 @@ th { color: var(--tenue); font-weight: 600; }
 .cifra { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 12px; }
 .cifra b { display: block; font-size: 1.4rem; }
 .cifra span { color: var(--tenue); font-size: .85rem; }
+.studio { background: var(--avviso); color: var(--testo); border-radius: 999px; padding: 2px 8px; text-transform: none; letter-spacing: 0; font-size: .8rem; margin-left: 6px; }
 .su { color: var(--su); } .giu { color: var(--giu); }
 footer { margin: 40px 0 24px; color: var(--tenue); font-size: .85rem; text-align: center; }
 a { color: var(--accento); }
@@ -61,7 +62,7 @@ a { color: var(--accento); }
 <h2>Oggi</h2>
 {% for s in schede %}
 <article class="carta">
-  <div class="mercato">{{ s.nome_mercato }}</div>
+  <div class="mercato">{{ s.nome_mercato }}{% if s.sotto_soglia %} <span class="studio">solo studio</span>{% endif %}</div>
   {% if s.simbolo %}
   <h3>{{ s.nome }} <small class="dettaglio">({{ s.simbolo }})</small></h3>
   <p class="dettaglio">Chiusura di ieri: {{ s.prezzo_ieri | it_num }} {{ "€" if s.valuta == "EUR" else "$" }}</p>
@@ -121,6 +122,8 @@ a { color: var(--accento); }
 {% else %}
 <div class="cifre">
   <div class="cifra"><b>{{ stat.percentuale | it_pct }}</b><span>previsioni azzeccate ({{ stat.azzeccate }} su {{ stat.totale }})</span></div>
+  <div class="cifra"><b>{{ stat.sopra_soglia.percentuale | it_pct }}</b><span>consigli sopra soglia ({{ stat.sopra_soglia.azzeccate }} su {{ stat.sopra_soglia.totale }})</span></div>
+  <div class="cifra"><b>{{ stat.studio.percentuale | it_pct }}</b><span>titoli "solo studio" ({{ stat.studio.azzeccate }} su {{ stat.studio.totale }})</span></div>
   {% for m, c in stat.per_mercato.items() %}{% if c.totale %}
   <div class="cifra"><b>{{ c.percentuale | it_pct }}</b><span>{{ m }}: {{ c.azzeccate }} su {{ c.totale }}</span></div>
   {% endif %}{% endfor %}
@@ -128,7 +131,7 @@ a { color: var(--accento); }
 
 <div class="carta" style="margin-top:16px">
   <h4>Conto simulato da {{ stat.conto_simulato.iniziale | it_num(0) }} €</h4>
-  <p>Investendo ogni giorno tutto nei titoli consigliati, commissioni comprese, oggi avresti
+  <p>Investendo ogni giorno tutto nei titoli consigliati sopra soglia (esclusi quelli "solo studio"), commissioni comprese, oggi avresti
     <b>{{ stat.conto_simulato.finale_netto | it_num }} €</b> dopo le tasse
     ({{ (stat.conto_simulato.finale_netto / stat.conto_simulato.iniziale - 1) | it_pct(2, true) }}).</p>
   <h4>Il tuo conto IBKR da {{ stat.conto_ibkr.iniziale | it_num(0) }} €</h4>

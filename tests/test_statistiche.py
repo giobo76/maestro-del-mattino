@@ -79,3 +79,14 @@ def test_rendimento_indice():
                        index=pd.to_datetime(["2026-09-30", "2026-10-01", "2026-10-02", "2026-10-05"]))
     stat = calcola_statistiche(prev_con_esiti(esiti), carica_config("config.yaml"), {}, {"ITA": indice})
     assert stat["indici"]["ITA"] == pytest.approx(110 / 100 - 1)
+
+
+def test_conti_solo_sopra_soglia():
+    prev = prev_con_esiti([(date(2026, 10, 1), 10, 11), (date(2026, 10, 2), 10, 5)])
+    prev.loc[prev["data"] == "2026-10-02", "sotto_soglia"] = True
+    stat = calcola_statistiche(prev, carica_config("config.yaml"), {}, {})
+    assert stat["totale"] == 2
+    assert stat["sopra_soglia"]["totale"] == 1 and stat["studio"]["totale"] == 1
+    conto = simula_conto(prev[~prev["sotto_soglia"]], {"ITA": 100}, ZERO, {}, 0)
+    assert stat["conto_simulato"]["andamento"][-1][0] == "2026-10-01"
+    assert conto["finale_lordo"] == pytest.approx(110)

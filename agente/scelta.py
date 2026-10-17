@@ -22,20 +22,21 @@ class Scelta:
     giudizio_notizie: str | None = None
     notizie: list[Notizia] = field(default_factory=list)
     scartati: list[str] = field(default_factory=list)
+    sotto_soglia: bool = False
     nota: str = ""
 
 
 def scegli(mercato: Mercato, prezzi: dict[str, pd.DataFrame], tabella: pd.DataFrame,
            trova_notizie: Callable[[str, str], list[Notizia]],
            giudica: Callable[[str, list[Notizia]], str | None],
-           soglia: float, max_candidati: int = 5) -> Scelta:
+           soglia: float, max_candidati: int = 5, studio: bool = False) -> Scelta:
     candidati = []
     for simbolo, df in prezzi.items():
         situazione = calcola_situazione(calcola_indicatori(df)).iloc[-1]
         if pd.isna(situazione):
             continue
         trovato = cerca(tabella, situazione)
-        if trovato and trovato["prob"] >= soglia:
+        if trovato and (studio or trovato["prob"] >= soglia):
             candidati.append((simbolo, situazione, trovato))
     candidati.sort(key=lambda c: c[2]["prob"], reverse=True)
 
@@ -55,8 +56,13 @@ def scegli(mercato: Mercato, prezzi: dict[str, pd.DataFrame], tabella: pd.DataFr
         scelta.simbolo, scelta.nome, scelta.situazione = simbolo, nome, situazione
         scelta.prob, scelta.casi, scelta.rend_medio = trovato["prob"], trovato["casi"], trovato["rend_medio"]
         scelta.giudizio_notizie, scelta.notizie = giudizio, notizie
+        scelta.sotto_soglia = trovato["prob"] < soglia
+        note = []
+        if scelta.sotto_soglia:
+            note.append("Sotto soglia: solo per studio, non per investire.")
         if giudizio is None:
-            scelta.nota = "Filtro notizie non disponibile oggi."
+            note.append("Filtro notizie non disponibile oggi.")
+        scelta.nota = " ".join(note)
         return scelta
 
     scelta.nota = ("Oggi i titoli migliori avevano notizie negative e sono stati scartati: "

@@ -85,7 +85,7 @@ def _storico(prev: pd.DataFrame) -> list[dict]:
         else:
             esito = ("✅ " if r["salito"] else "❌ ") + it_pct(r["rend"], 2, segno=True)
         righe.append({"data": r["data"], "mercato": r["mercato"], "nome": r["nome"],
-                      "prob": it_pct(r["prob"]), "apertura": it_num(r["apertura"]),
+                      "prob": it_pct(r["prob"]) + (" (studio)" if r.get("sotto_soglia") is True else ""), "apertura": it_num(r["apertura"]),
                       "chiusura": it_num(r["chiusura"]), "esito": esito})
     return righe
 
