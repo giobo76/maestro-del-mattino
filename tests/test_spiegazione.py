@@ -4,7 +4,8 @@ from agente.dati import Notizia
 from agente.spiegazione import giudica_notizie, scrivi_testi
 
 NOTIZIA = Notizia("Eni alza le stime", "http://x", "Sole", datetime(2026, 10, 16, tzinfo=timezone.utc))
-SCHEDA = {"nome": "Eni", "mercato": "Borsa Italiana", "prob": 0.57, "casi": 142, "rend_medio": 0.004,
+SCHEDA = {"nome": "Eni", "mercato": "Borsa Italiana", "resa": 0.25, "casi": 142, "pct_stop": 0.41, "pct_2r": 0.33,
+          "livelli": {"riferimento": 100.0, "stop": 96.0, "pareggio": 104.0, "prima_uscita": 108.0},
           "situazione": "trend=su|rsi=normale|macd=rialzo|vol=alto|rottura=no|giorno=normale",
           "notizie": ["Eni alza le stime"]}
 TESTI_OK = ('{"perche": "Il titolo sale.", "rischio": "Dati USA.", "parola": "MACD", '
@@ -64,7 +65,14 @@ def test_cervello_none():
 def test_prompt_contiene_parole_usate():
     cervello = CervelloFinto(TESTI_OK)
     scrivi_testi(cervello, SCHEDA, ["RSI", "volumi"])
-    assert "RSI" in cervello.prompt[0] and "57,0%" in cervello.prompt[0] and "+0,40%" in cervello.prompt[0]
+    assert "RSI" in cervello.prompt[0]
+
+
+def test_prompt_contiene_livelli():
+    cervello = CervelloFinto(TESTI_OK)
+    scrivi_testi(cervello, SCHEDA, [])
+    prompt = cervello.prompt[0]
+    assert "96,00" in prompt and "108,00" in prompt and "+0,25R" in prompt and "41%" in prompt
 
 
 def test_prompt_avvisa_solo_studio():

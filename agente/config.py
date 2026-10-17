@@ -18,7 +18,9 @@ class Mercato:
 @dataclass
 class Config:
     mercati: dict[str, Mercato]
-    soglia_prob: float
+    soglia_r: float
+    atr_mult: float
+    email_destinatario: str
     modalita_studio: bool
     casi_minimi: int
     casi_virtuali: int

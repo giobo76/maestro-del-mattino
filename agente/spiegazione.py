@@ -75,24 +75,36 @@ def _pct(valore: float, decimali: int, segno: str = "") -> str:
     return f"{valore * 100:{segno}.{decimali}f}%".replace(".", ",")
 
 
+def _prezzo(valore: float) -> str:
+    return f"{valore:.2f}".replace(".", ",")
+
+
+def _r(valore: float) -> str:
+    return f"{valore:+.2f}R".replace(".", ",")
+
+
 def scrivi_testi(cervello: Cervello | None, scheda: dict, parole_gia_usate: list[str]) -> dict | None:
     notizie = "\n".join(f"- {t}" for t in scheda.get("notizie", [])) or "- nessuna notizia"
+    lv = scheda["livelli"]
     prompt = (
-        "Scheda del titolo del giorno:\n"
+        "Scheda dell'operazione del giorno:\n"
         f"Titolo: {scheda['nome']} ({scheda['mercato']})\n"
-        f"Probabilità storica di salire tra apertura e chiusura: {_pct(scheda['prob'], 1)} "
-        f"su {scheda['casi']} casi simili\n"
-        f"Guadagno medio storico in questi casi: {_pct(scheda['rend_medio'], 2, '+')}\n"
+        f"Piano: ingresso all'apertura; stop loss a {_prezzo(lv['stop'])}; quando il prezzo arriva a "
+        f"{_prezzo(lv['pareggio'])} (+1R) lo stop sale al prezzo d'ingresso; a {_prezzo(lv['prima_uscita'])} "
+        "(+2R) si vende metà; il resto si tiene finché il titolo chiude sotto la media mobile a 20 giorni.\n"
+        f"Chiusura di riferimento: {_prezzo(lv['riferimento'])}\n"
+        f"Nel passato, in {scheda['casi']} operazioni con segnali simili: resa media {_r(scheda['resa'])} "
+        f"per operazione, stop pieno nel {_pct(scheda['pct_stop'], 0)} dei casi, "
+        f"+2R raggiunto nel {_pct(scheda['pct_2r'], 0)}.\n"
         f"Segnali: {scheda['situazione']}\n"
         f"Notizie delle ultime 24 ore:\n{notizie}\n\n"
-        + ("ATTENZIONE: la probabilità è sotto la soglia del 55%: è un titolo solo per studio, non un "
+        + ("ATTENZIONE: la resa storica è sotto la soglia: è un titolo solo per studio, non un "
            "consiglio di investimento. Dillo chiaramente nella prima frase di 'perche'.\n\n"
            if scheda.get("sotto_soglia") else "")
-        +
-        "Scrivi per un principiante, in italiano semplice. Rispondi solo con JSON con le chiavi "
+        + "Scrivi per un principiante, in italiano semplice. Rispondi solo con JSON con le chiavi "
         '"perche", "rischio", "parola", "parola_spiegazione". '
-        "'perche': 4-5 frasi che spiegano i segnali e le notizie. "
-        "'rischio': 1-2 frasi sul rischio principale di oggi. "
+        "'perche': 4-5 frasi che spiegano i segnali, le notizie e il piano dell'operazione. "
+        "'rischio': 1-2 frasi sul rischio principale, dicendo quanto si perde in percentuale se scatta lo stop. "
         "'parola': un termine tecnico presente nella scheda e non in questo elenco: "
         f"{', '.join(parole_gia_usate) or 'nessuno'}. "
         "'parola_spiegazione': spiegazione con un esempio, massimo 3 frasi. "

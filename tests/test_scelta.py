@@ -1,23 +1,24 @@
+import numpy as np
 import pandas as pd
 
 from agente.config import Mercato
 from agente.scelta import scegli
 from agente.segnali import calcola_indicatori, calcola_situazione
-from tests.aiuti import passeggiata
+from tests.aiuti import crea_prezzi, passeggiata
 
 MERCATO = Mercato("ITA", "Borsa Italiana", "XMIL", "FTSEMIB.MI", "EUR", "it",
-                  {"AAA.MI": "Alfa", "BBB.MI": "Beta", "CCC.MI": "Gamma"})
+                  {"AAA.MI": "Alfa", "BBB.MI": "Beta", "CCC.MI": "Gamma", "FER.MI": "Fermo"})
 
 
-def prepara(probabilita):
-    """probabilita: simbolo -> prob (None = situazione assente dalla tabella)."""
+def prepara(rese):
+    """rese: simbolo -> resa in R (None = situazione assente dalla tabella)."""
     prezzi, righe = {}, []
-    for i, (simbolo, prob) in enumerate(probabilita.items()):
-        prezzi[simbolo] = passeggiata(80, seme=i)
+    for i, (simbolo, resa) in enumerate(rese.items()):
+        prezzi[simbolo] = crea_prezzi(np.full(80, 10.0)) if simbolo == "FER.MI" else passeggiata(80, seme=i)
         situazione = calcola_situazione(calcola_indicatori(prezzi[simbolo])).iloc[-1]
-        if prob is not None:
-            righe.append({"situazione": situazione, "casi": 100, "salite": int(prob * 100),
-                          "prob_grezza": prob, "prob": prob, "rend_medio": 0.003})
+        if resa is not None:
+            righe.append({"situazione": situazione, "casi": 100, "resa_grezza": resa, "resa": resa,
+                          "pct_stop": 0.4, "pct_2r": 0.3})
     tabella = pd.DataFrame(righe).drop_duplicates("situazione").set_index("situazione")
     return prezzi, tabella
 
@@ -26,58 +27,42 @@ def nessuna_notizia(nome, simbolo):
     return []
 
 
-def test_sceglie_prob_piu_alta():
-    prezzi, tabella = prepara({"AAA.MI": 0.56, "BBB.MI": 0.60})
-    assert len(tabella) == 2  # situazioni diverse, altrimenti il test non ha senso
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55)
-    assert scelta.simbolo == "BBB.MI" and scelta.nome == "Beta"
-    assert scelta.prob == 0.60 and scelta.casi == 100 and scelta.nota == ""
+def scelta(rese, giudica=lambda n, x: "neutro", studio=False):
+    prezzi, tabella = prepara(rese)
+    return scegli(MERCATO, prezzi, tabella, nessuna_notizia, giudica, 0.10, 2.0, studio=studio), tabella
+
+
+def test_sceglie_resa_piu_alta():
+    s, tabella = scelta({"AAA.MI": 0.2, "BBB.MI": 0.4})
+    assert len(tabella) == 2
+    assert s.simbolo == "BBB.MI" and s.nome == "Beta" and s.resa == 0.4 and s.casi == 100
+    assert s.pct_stop == 0.4 and s.pct_2r == 0.3 and s.nota == ""
+    assert s.livelli.stop < s.livelli.riferimento < s.livelli.pareggio < s.livelli.prima_uscita
 
 
 def test_scarta_notizie_negative():
-    prezzi, tabella = prepara({"AAA.MI": 0.56, "BBB.MI": 0.60})
-    giudizi = {"Beta": "negativo", "Alfa": "positivo"}
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda nome, n: giudizi[nome], 0.55)
-    assert scelta.simbolo == "AAA.MI"
-    assert scelta.scartati == ["BBB.MI"]
-    assert scelta.giudizio_notizie == "positivo"
-
-
-def test_tutti_scartati():
-    prezzi, tabella = prepara({"AAA.MI": 0.56, "BBB.MI": 0.60})
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "negativo", 0.55)
-    assert scelta.simbolo is None
-    assert "notizie negative" in scelta.nota
+    s, _ = scelta({"AAA.MI": 0.2, "BBB.MI": 0.4}, giudica=lambda nome, n: {"Beta": "negativo"}.get(nome, "neutro"))
+    assert s.simbolo == "AAA.MI" and s.scartati == ["BBB.MI"]
 
 
 def test_nessuno_sopra_soglia():
-    prezzi, tabella = prepara({"AAA.MI": 0.51, "BBB.MI": 0.52})
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55)
-    assert scelta.simbolo is None
-    assert "55%" in scelta.nota
-
-
-def test_giudizio_non_disponibile():
-    prezzi, tabella = prepara({"AAA.MI": 0.58})
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: None, 0.55)
-    assert scelta.simbolo == "AAA.MI"
-    assert scelta.nota == "Filtro notizie non disponibile oggi."
-
-
-def test_situazione_sconosciuta_ignorata():
-    prezzi, tabella = prepara({"AAA.MI": 0.58, "CCC.MI": None})
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55)
-    assert scelta.simbolo == "AAA.MI"
+    s, _ = scelta({"AAA.MI": 0.05, "BBB.MI": -0.1})
+    assert s.simbolo is None
+    assert s.nota == "Oggi nessun titolo ha una resa storica di almeno +0,10R: meglio stare fermi."
 
 
 def test_modalita_studio_sotto_soglia():
-    prezzi, tabella = prepara({"AAA.MI": 0.51, "BBB.MI": 0.52})
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55, studio=True)
-    assert scelta.simbolo == "BBB.MI" and scelta.sotto_soglia is True
-    assert scelta.nota == "Sotto soglia: solo per studio, non per investire."
+    s, _ = scelta({"AAA.MI": 0.05, "BBB.MI": -0.1}, studio=True)
+    assert s.simbolo == "AAA.MI" and s.sotto_soglia is True
+    assert s.nota == "Sotto soglia: solo per studio, non per investire."
 
 
-def test_modalita_studio_sopra_soglia_normale():
-    prezzi, tabella = prepara({"AAA.MI": 0.51, "BBB.MI": 0.56})
-    scelta = scegli(MERCATO, prezzi, tabella, nessuna_notizia, lambda n, x: "neutro", 0.55, studio=True)
-    assert scelta.simbolo == "BBB.MI" and scelta.sotto_soglia is False and scelta.nota == ""
+def test_atr_nullo_escluso():
+    s, tabella = scelta({"AAA.MI": 0.2, "FER.MI": 0.9})
+    assert len(tabella) == 2
+    assert s.simbolo == "AAA.MI"
+
+
+def test_situazione_sconosciuta_ignorata():
+    s, _ = scelta({"AAA.MI": 0.2, "CCC.MI": None})
+    assert s.simbolo == "AAA.MI"

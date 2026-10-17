@@ -1,6 +1,8 @@
 # Impostazioni dell'agente "Maestro del mattino"
 
-soglia_prob: 0.55        # probabilità minima per consigliare un titolo
+soglia_r: 0.10           # resa media storica minima (in R) per un consiglio vero
+atr_mult: 2.0            # stop = chiusura di ieri - atr_mult x ATR 14 giorni
+email_destinatario: bonolinigiovanni@gmail.com
 modalita_studio: true    # mostra comunque il titolo migliore, etichettato "solo per studio"
 casi_minimi: 30          # situazioni viste meno volte vengono scartate
 casi_virtuali: 30        # correzione verso la media quando i casi sono pochi
