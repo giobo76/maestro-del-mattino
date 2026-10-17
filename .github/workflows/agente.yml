@@ -1,0 +1,86 @@
+name: Maestro del mattino
+
+on:
+  schedule:
+    - cron: "30 5 * * 1-5"   # mattina (07:30 con l'ora legale)
+    - cron: "30 6 * * 1-5"   # mattina (07:30 con l'ora solare)
+    - cron: "30 20 * * 1-5"  # sera (22:30 con l'ora legale)
+    - cron: "30 21 * * 1-5"  # sera (22:30 con l'ora solare)
+    - cron: "0 8 * * 6"      # sabato: ricalcolo della tabella storica
+  workflow_dispatch:
+    inputs:
+      comando:
+        description: "Cosa eseguire"
+        type: choice
+        options: [mattina, sera, tabella]
+        default: mattina
+      forza:
+        description: "Esegui anche fuori orario o se già fatto oggi"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: agente
+  cancel-in-progress: false
+
+jobs:
+  esegui:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pubblica.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Scegli il comando
+        id: comando
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            comando="${{ inputs.comando }}"
+            [ "${{ inputs.forza }}" = "true" ] && extra="--forza"
+          else
+            case "${{ github.event.schedule }}" in
+              "30 5 * * 1-5"|"30 6 * * 1-5") comando=mattina ;;
+              "30 20 * * 1-5"|"30 21 * * 1-5") comando=sera ;;
+              *) comando=tabella ;;
+            esac
+          fi
+          echo "args=$comando ${extra:-}" >> "$GITHUB_OUTPUT"
+
+      - name: Esegui l'agente
+        id: agente
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m agente ${{ steps.comando.outputs.args }}
+
+      - name: Salva i dati
+        if: steps.agente.outputs.nessun_lavoro == 'false'
+        run: |
+          git config user.name "agente-bot"
+          git config user.email "agente-bot@users.noreply.github.com"
+          git add dati
+          if ! git diff --cached --quiet; then
+            git commit -m "dati: ${{ steps.comando.outputs.args }} $(date -u +%F)"
+            git push
+          fi
+
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.agente.outputs.nessun_lavoro == 'false'
+        with:
+          path: sito
+
+      - id: pubblica
+        if: steps.agente.outputs.nessun_lavoro == 'false'
+        uses: actions/deploy-pages@v4
