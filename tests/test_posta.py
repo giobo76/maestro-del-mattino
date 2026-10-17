@@ -81,5 +81,7 @@ def test_email_mattina_livelli():
 def test_email_mattina_quantita_zero_e_solo_simulato():
     _, html = email_mattina([scheda(quantita=0)], URL)
     assert "nemmeno una" in html
+    _, html = email_mattina([scheda(quantita=0, capitale=1000)], URL)
+    assert "con 1.000 € non puoi" in html
     _, html = email_mattina([scheda(quantita=None)], URL)
     assert "non incluso nel tuo conto" in html

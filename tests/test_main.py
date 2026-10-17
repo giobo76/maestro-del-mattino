@@ -191,7 +191,8 @@ def test_prova_contiene_media_di_tutte(tmp_path):
 
 
 def test_quantita_solo_mercati_del_conto(tmp_path):
-    esegui_mattina(config_piccola(), tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    cfg = dataclasses.replace(config_piccola(), ibkr_mercati=["USA"], ibkr_capitale_eur=100)
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
     schede = {x["mercato"]: x for x in leggi_oggi(tmp_path / "dati" / "oggi.json")["schede"]}
     assert schede["ITA"]["quantita"] is None and schede["USA"]["quantita"] > 0
     assert 0 < schede["USA"]["costo_r"] < 5

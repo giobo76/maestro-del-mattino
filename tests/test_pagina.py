@@ -114,5 +114,10 @@ def test_scheda_confronto_e_costi(tmp_path):
     assert "Commissioni stimate: circa 0,21R" in html and "+0,04R" in html  # 0,25 − 0,21
 
 
+def test_capitale_dal_conto(tmp_path):
+    html = genera(tmp_path, [scheda(capitale=1000, quantita=0)])
+    assert "con 1.000 € non puoi comprarne nemmeno una" in html
+
+
 def test_scheda_mercato_fuori_conto(tmp_path):
     assert "non incluso nel tuo conto IBKR" in genera(tmp_path, [scheda(quantita=None, perdita_massima=None)])

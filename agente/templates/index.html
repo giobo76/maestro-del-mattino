@@ -85,10 +85,11 @@ a { color: var(--accento); }
     <tr><td>Prima uscita (+2R): vendi metà</td><td><b>{{ s.livelli.prima_uscita | it_prezzo(v) }}</b> ({{ ((s.livelli.prima_uscita / s.livelli.riferimento) - 1) | it_pct(1, true) }})</td></tr>
     <tr><td>Il resto</td><td>dopo una chiusura sotto la media a 20 giorni</td></tr>
   </table>
+  {% set capitale = (s.capitale or 100) | it_num(0) %}
   {% if s.quantita %}
-  <p class="dettaglio">Con il tuo conto da 100 €: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
+  <p class="dettaglio">Con il tuo conto da {{ capitale }} €: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
   {% elif s.quantita == 0 %}
-  <p class="nota">Il titolo costa più del tuo capitale: con 100 € non puoi comprarne nemmeno una.</p>
+  <p class="nota">Il titolo costa più del tuo capitale: con {{ capitale }} € non puoi comprarne nemmeno una.</p>
   {% else %}
   <p class="dettaglio">Mercato non incluso nel tuo conto IBKR: questa operazione è solo simulata.</p>
   {% endif %}
@@ -169,7 +170,7 @@ a { color: var(--accento); }
   <p>Seguendo tutti i consigli veri, commissioni comprese, avresti <b>{{ stat.conto_simulato.finale_netto | it_num }} €</b> dopo le tasse.</p>
   <h4>Il tuo conto IBKR da {{ stat.conto_ibkr.iniziale | it_num(0) }} €</h4>
   <p>Con commissioni IBKR (ingresso più una o due uscite), cambio e tasse avresti <b>{{ stat.conto_ibkr.finale_netto | it_num }} €</b>.</p>
-  <p class="dettaglio">Attenzione: con 100 € sui titoli italiani le commissioni minime (1,25 € a ordine, fino a 3 ordini) possono valere quasi 1R.</p>
+  <p class="dettaglio">Attenzione: con un conto piccolo le commissioni minime italiane (1,25 € a ordine, fino a 3 ordini) possono valere quasi 1R.</p>
   {% if stat.indici %}
   <h4>Confronto: comprare l'indice e non fare nulla</h4>
   <ul>{% for m, r in stat.indici.items() %}<li>{{ "FTSE MIB" if m == "ITA" else "S&P 500" }}: {{ r | it_pct(2, true) }}</li>{% endfor %}</ul>

@@ -204,7 +204,7 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             op = nuova_operazione(scelta, seduta_precedente(mercato.calendario, oggi))
             ops.append(op)
             scheda.update(nuova=True, grafico=str(grafico), testi=testi, quantita=n, perdita_massima=perdita,
-                          costo_r=costo_r, posizione_id=op.id, nota=scelta.nota)
+                          costo_r=costo_r, posizione_id=op.id, nota=scelta.nota, capitale=cfg.ibkr_capitale_eur)
         log.info("%s: scelto %s (%s)", codice, scelta.simbolo, scelta.nota or "ok")
         schede.append(scheda)
 
