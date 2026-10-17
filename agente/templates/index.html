@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maestro del mattino</title>
+<style>
+:root {
+  --sfondo: #f6f7f9; --carta: #ffffff; --testo: #1b1f24; --tenue: #59636e; --bordo: #d8dee4;
+  --accento: #1f6feb; --su: #1a7f37; --giu: #cf222e; --avviso: #fff8c5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sfondo: #0d1117; --carta: #161b22; --testo: #e6edf3; --tenue: #9198a1; --bordo: #30363d;
+    --accento: #4493f8; --su: #3fb950; --giu: #f85149; --avviso: #3b2e00;
+  }
+  img.grafico { filter: invert(0.92) hue-rotate(180deg); }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--sfondo); color: var(--testo);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 16px; }
+header h1 { margin: 8px 0 0; font-size: 1.6rem; }
+header p { margin: 4px 0 0; color: var(--tenue); font-size: .9rem; }
+nav { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+nav a { color: var(--accento); text-decoration: none; padding: 6px 12px; border: 1px solid var(--bordo);
+  border-radius: 999px; background: var(--carta); font-size: .9rem; }
+h2 { margin: 32px 0 12px; font-size: 1.3rem; }
+h3 { margin: 0 0 4px; font-size: 1.15rem; }
+h4 { margin: 16px 0 4px; font-size: .95rem; color: var(--tenue); text-transform: uppercase; letter-spacing: .03em; }
+.carta { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.mercato { color: var(--tenue); font-size: .85rem; text-transform: uppercase; letter-spacing: .04em; }
+.prob { font-size: 2rem; font-weight: 700; color: var(--accento); margin: 8px 0 0; }
+.dettaglio { color: var(--tenue); font-size: .9rem; margin: 0; }
+.nota { background: var(--avviso); border-radius: 8px; padding: 10px 12px; margin: 12px 0 0; }
+img.grafico { width: 100%; height: auto; border-radius: 8px; margin-top: 12px; }
+ul { padding-left: 20px; margin: 4px 0; }
+.parola { border-left: 4px solid var(--accento); padding-left: 12px; }
+.tabella { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--bordo); white-space: nowrap; }
+th { color: var(--tenue); font-weight: 600; }
+.cifre { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.cifra { background: var(--carta); border: 1px solid var(--bordo); border-radius: 12px; padding: 12px; }
+.cifra b { display: block; font-size: 1.4rem; }
+.cifra span { color: var(--tenue); font-size: .85rem; }
+.su { color: var(--su); } .giu { color: var(--giu); }
+footer { margin: 40px 0 24px; color: var(--tenue); font-size: .85rem; text-align: center; }
+a { color: var(--accento); }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Maestro del mattino</h1>
+  <p>Aggiornato il {{ aggiornato }}</p>
+</header>
+<nav><a href="#oggi">Oggi</a><a href="#storico">Com'è andata</a><a href="#statistiche">Statistiche</a></nav>
+
+<section id="oggi">
+<h2>Oggi</h2>
+{% for s in schede %}
+<article class="carta">
+  <div class="mercato">{{ s.nome_mercato }}</div>
+  {% if s.simbolo %}
+  <h3>{{ s.nome }} <small class="dettaglio">({{ s.simbolo }})</small></h3>
+  <p class="dettaglio">Chiusura di ieri: {{ s.prezzo_ieri | it_num }} {{ "€" if s.valuta == "EUR" else "$" }}</p>
+  <p class="prob">{{ s.prob | it_pct }}</p>
+  <p class="dettaglio">probabilità storica di salire tra apertura e chiusura, su {{ s.casi }} casi simili.
+    Guadagno medio in questi casi: {{ s.rend_medio | it_pct(2, true) }}</p>
+  {% if s.grafico_url %}<img class="grafico" src="{{ s.grafico_url }}" alt="Grafico di {{ s.nome }} negli ultimi 3 mesi">{% endif %}
+
+  <h4>I segnali</h4>
+  <ul>{% for segnale in s.situazione | leggi_segnali %}<li>{{ segnale }}</li>{% endfor %}</ul>
+
+  {% if s.testi %}
+  <h4>Perché questo titolo</h4>
+  <p>{{ s.testi.perche }}</p>
+  <h4>Cosa potrebbe andare storto</h4>
+  <p>{{ s.testi.rischio }}</p>
+  <h4>Parola del giorno</h4>
+  <p class="parola"><b>{{ s.testi.parola }}</b>: {{ s.testi.parola_spiegazione }}</p>
+  {% else %}
+  <p class="nota">Spiegazione non disponibile oggi: restano validi i numeri e i segnali qui sopra.</p>
+  {% endif %}
+
+  <h4>Notizie delle ultime 24 ore{% if s.giudizio_notizie %}: giudizio {{ s.giudizio_notizie }}{% endif %}</h4>
+  {% if s.notizie %}
+  <ul>{% for n in s.notizie[:5] %}<li><a href="{{ n.link }}" rel="noopener" target="_blank">{{ n.titolo }}</a> <span class="dettaglio">({{ n.fonte }})</span></li>{% endfor %}</ul>
+  {% else %}<p class="dettaglio">Nessuna notizia trovata.</p>{% endif %}
+  {% if s.scartati %}<p class="dettaglio">Scartati per notizie negative: {{ s.scartati | join(", ") }}</p>{% endif %}
+  {% endif %}
+  {% if s.nota %}<p class="nota">{{ s.nota }}</p>{% endif %}
+</article>
+{% else %}
+<p class="carta">Ancora nessuna analisi per oggi.</p>
+{% endfor %}
+</section>
+
+<section id="storico">
+<h2>Com'è andata</h2>
+{% if storico %}
+<div class="carta tabella">
+<table>
+  <thead><tr><th>Data</th><th>Mercato</th><th>Titolo</th><th>Prob.</th><th>Apertura</th><th>Chiusura</th><th>Risultato</th></tr></thead>
+  <tbody>
+  {% for r in storico %}
+  <tr><td>{{ r.data }}</td><td>{{ r.mercato }}</td><td>{{ r.nome }}</td><td>{{ r.prob }}</td>
+      <td>{{ r.apertura }}</td><td>{{ r.chiusura }}</td><td>{{ r.esito }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p class="carta">Ancora nessuna previsione.</p>{% endif %}
+</section>
+
+<section id="statistiche">
+<h2>Statistiche</h2>
+{% if stat.totale == 0 %}
+<p class="carta">Ancora nessun risultato: le statistiche compaiono dopo la prima verifica serale.</p>
+{% else %}
+<div class="cifre">
+  <div class="cifra"><b>{{ stat.percentuale | it_pct }}</b><span>previsioni azzeccate ({{ stat.azzeccate }} su {{ stat.totale }})</span></div>
+  {% for m, c in stat.per_mercato.items() %}{% if c.totale %}
+  <div class="cifra"><b>{{ c.percentuale | it_pct }}</b><span>{{ m }}: {{ c.azzeccate }} su {{ c.totale }}</span></div>
+  {% endif %}{% endfor %}
+</div>
+
+<div class="carta" style="margin-top:16px">
+  <h4>Conto simulato da {{ stat.conto_simulato.iniziale | it_num(0) }} €</h4>
+  <p>Investendo ogni giorno tutto nei titoli consigliati, commissioni comprese, oggi avresti
+    <b>{{ stat.conto_simulato.finale_netto | it_num }} €</b> dopo le tasse
+    ({{ (stat.conto_simulato.finale_netto / stat.conto_simulato.iniziale - 1) | it_pct(2, true) }}).</p>
+  <h4>Il tuo conto IBKR da {{ stat.conto_ibkr.iniziale | it_num(0) }} €</h4>
+  <p>Con commissioni IBKR, cambio euro/dollaro e tasse del 26% avresti
+    <b>{{ stat.conto_ibkr.finale_netto | it_num }} €</b>
+    ({{ (stat.conto_ibkr.finale_netto / stat.conto_ibkr.iniziale - 1) | it_pct(2, true) }}).</p>
+  {% if stat.indici %}
+  <h4>Confronto: comprare l'indice e non fare nulla</h4>
+  <ul>{% for m, r in stat.indici.items() %}<li>{{ "FTSE MIB" if m == "ITA" else "S&P 500" }}: {{ r | it_pct(2, true) }}</li>{% endfor %}</ul>
+  {% endif %}
+</div>
+
+<div class="carta tabella">
+  <h4>Le probabilità annunciate sono rispettate?</h4>
+  <table>
+    <thead><tr><th>Probabilità annunciata</th><th>Previsioni</th><th>Risultato reale</th></tr></thead>
+    <tbody>{% for f in stat.calibrazione %}<tr><td>{{ f.fascia }}</td><td>{{ f.previsioni }}</td><td>{{ f.percentuale | it_pct }}</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+
+{% if stat.segnali %}
+<div class="carta tabella">
+  <h4>Quali segnali hanno funzionato (almeno 5 casi)</h4>
+  <table>
+    <thead><tr><th>Segnale</th><th>Casi</th><th>Saliti</th></tr></thead>
+    <tbody>{% for g in stat.segnali %}<tr><td>{{ (g.segnale | leggi_segnali)[0] }}</td><td>{{ g.casi }}</td><td>{{ g.percentuale | it_pct }}</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+{% endif %}
+{% endif %}
+
+{% if prova %}
+<div class="carta">
+  <h4>Prova sull'ultimo anno (dati che il calcolo non aveva visto)</h4>
+  {% for m, p in prova.items() %}
+  <p><b>{{ "Borsa Italiana" if m == "ITA" else "Stati Uniti" }}</b>, dal {{ p.dal }} al {{ p.al }}:
+  {% if p.giorni_con_scelta %}
+    {{ p.giorni_con_scelta }} giorni con un consiglio, probabilità media annunciata {{ p.prob_media_annunciata | it_pct }},
+    risultato reale {{ p.percentuale_reale | it_pct }}, guadagno medio per giorno {{ p.rend_medio | it_pct(2, true) }} (prima dei costi).
+  {% else %}nessun giorno sopra la soglia.{% endif %}</p>
+  {% endfor %}
+  <p class="dettaglio">I segnali migliori arrivano di solito al 53–60% di probabilità.</p>
+</div>
+{% endif %}
+</section>
+
+<footer>{{ footer }}</footer>
+</main>
+</body>
+</html>
