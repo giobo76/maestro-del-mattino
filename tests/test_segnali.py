@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 import pandas as pd
 
 from agente.segnali import calcola_indicatori, calcola_situazione
@@ -52,3 +53,10 @@ def test_nessuna_sbirciata():
     for k in (60, 99, 140):
         parziale = calcola_situazione(calcola_indicatori(prezzi.iloc[: k + 1]))
         assert parziale.iloc[-1] == intera.iloc[k]
+
+
+def test_atr_wilder():
+    chiusure = np.full(30, 10.0)
+    prezzi = crea_prezzi(chiusure, massimi=chiusure + 1)
+    prezzi["Low"] = chiusure - 1
+    assert calcola_indicatori(prezzi)["atr14"].iloc[-1] == pytest.approx(2.0)

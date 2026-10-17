@@ -27,6 +27,11 @@ def calcola_indicatori(prezzi: pd.DataFrame) -> pd.DataFrame:
     ind["vol_media20"] = ind["Volume"].shift(1).rolling(20).mean()
     ind["max20_prec"] = ind["High"].shift(1).rolling(20).max()
     ind["rend_giorno"] = chiusura.pct_change()
+    chiusura_prec = chiusura.shift(1)
+    vero_range = pd.concat([ind["High"] - ind["Low"], (ind["High"] - chiusura_prec).abs(),
+                            (ind["Low"] - chiusura_prec).abs()], axis=1).max(axis=1, skipna=False)
+    vero_range.iloc[0] = ind["High"].iloc[0] - ind["Low"].iloc[0]
+    ind["atr14"] = vero_range.ewm(alpha=1 / 14, adjust=False, min_periods=14).mean()
     return ind
 
 
