@@ -24,7 +24,7 @@ from agente.pagina import disegna_grafico, genera_sito
 from agente.posta import email_mattina, email_sera, invia
 from agente.scelta import scegli
 from agente.spiegazione import Cervello, crea_cervello, giudica_notizie, scrivi_testi
-from agente.statistiche import calcola_statistiche, quantita
+from agente.statistiche import calcola_statistiche, costo_ordine, quantita
 from agente.storico_r import costruisci_tabella_r, prova_fuori_campione_r, simula_storico
 
 log = logging.getLogger("agente")
@@ -93,6 +93,7 @@ def esegui_tabella(cfg: Config, cartella_dati: Path, oggi: date, servizi: Serviz
         tabella = costruisci_tabella_r(storico, None, cfg.casi_minimi, cfg.casi_virtuali)
         tabella.to_csv(cartella_dati / f"tabella_{codice}.csv")
         prova = prova_fuori_campione_r(storico, cfg.casi_minimi, cfg.casi_virtuali, cfg.soglia_r)
+        prova["media_tutte"] = float(tabella.attrs["media"])
         (cartella_dati / f"prova_{codice}.json").write_text(json.dumps(prova, indent=2), encoding="utf-8")
         log.info("Tabella %s: %d situazioni, prova fuori campione %s", codice, len(tabella), prova)
 
@@ -126,9 +127,12 @@ def _pubblica(cfg: Config, cartella_dati: Path, cartella_sito: Path, ops: list[O
     genera_sito(cartella_sito, oggi_json, ops, stat, prova, adesso_roma())
 
 
-def _cambio_attuale(servizi: Servizi, oggi: date) -> float:
+def _cambio_attuale(servizi: Servizi, oggi: date) -> float | None:
     cambi = servizi.cambi(oggi, oggi)
-    return cambi[max(cambi)] if cambi else 1.0
+    if not cambi:
+        log.warning("Cambio EUR/USD non disponibile")
+        return None
+    return cambi[max(cambi)]
 
 
 def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: date,
@@ -140,7 +144,8 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
     schede = []
     for codice, mercato in cfg.mercati.items():
         base = {"mercato": codice, "nome_mercato": mercato.nome, "valuta": mercato.valuta, "nuova": False}
-        aperta = aperta_nel_mercato(ops, codice)
+        aperta = aperta_nel_mercato(ops, codice, solo_vere=True)
+        studio_aperta = aperta_nel_mercato(ops, codice)
         if aperta is not None:
             schede.append({**base, "simbolo": None, "posizione_id": aperta.id,
                            "nota": f"Posizione già aperta su {aperta.nome} ({STATI_LEGGIBILI[aperta.stato]}): "
@@ -166,12 +171,29 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             lambda nome, notizie: giudica_notizie(servizi.cervello, nome, notizie),
             cfg.soglia_r, cfg.atr_mult, studio=cfg.modalita_studio)
         scheda = {**dataclasses.asdict(scelta), **base, "grafico": None, "testi": None}
+        if scelta.simbolo and scelta.sotto_soglia and studio_aperta is not None:
+            # un solo titolo "solo studio" per mercato: non se ne apre un secondo
+            schede.append({**base, "simbolo": None, "posizione_id": studio_aperta.id,
+                           "nota": f"Oggi nessuna operazione vera. Prosegue lo studio di {studio_aperta.nome}."})
+            continue
         if scelta.simbolo:
             lv = scelta.livelli
             grafico = cartella_dati / "grafici" / f"{codice}.png"
             disegna_grafico(prezzi[scelta.simbolo], scelta.nome, grafico, lv)
             cambio = 1.0 if codice == "ITA" else _cambio_attuale(servizi, oggi)
-            n = quantita(codice, cfg.ibkr_capitale_eur, lv.riferimento, cambio)
+            n = perdita = costo_r = None
+            if codice in cfg.ibkr_mercati:
+                if cambio is None:
+                    scelta.nota = (scelta.nota + " Cambio euro/dollaro non disponibile: quantità calcolata "
+                                   "con 1 € = 1 $, verificala su IBKR.").strip()
+                    cambio = 1.0
+                n = quantita(codice, cfg.ibkr_capitale_eur, lv.riferimento, cambio)
+                perdita = n * lv.r / cambio
+                if perdita:
+                    capitale = cfg.ibkr_capitale_eur
+                    costi = (costo_ordine(codice, capitale, lv.riferimento, cfg.costi, cambio)
+                             + 2 * costo_ordine(codice, capitale / 2, lv.riferimento, cfg.costi, cambio))
+                    costo_r = costi / perdita
             testi = scrivi_testi(servizi.cervello, {
                 "nome": scelta.nome, "mercato": mercato.nome, "resa": scelta.resa, "casi": scelta.casi,
                 "pct_stop": scelta.pct_stop, "pct_2r": scelta.pct_2r, "situazione": scelta.situazione,
@@ -179,10 +201,10 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
                 "notizie": [x.titolo for x in scelta.notizie]}, parole[-30:])
             if testi:
                 parole.append(testi["parola"])
-            op = nuova_operazione(scelta, oggi)
+            op = nuova_operazione(scelta, seduta_precedente(mercato.calendario, oggi))
             ops.append(op)
-            scheda.update(nuova=True, grafico=str(grafico), testi=testi, quantita=n,
-                          perdita_massima=n * lv.r / cambio, posizione_id=op.id)
+            scheda.update(nuova=True, grafico=str(grafico), testi=testi, quantita=n, perdita_massima=perdita,
+                          costo_r=costo_r, posizione_id=op.id, nota=scelta.nota)
         log.info("%s: scelto %s (%s)", codice, scelta.simbolo, scelta.nota or "ok")
         schede.append(scheda)
 

@@ -131,7 +131,7 @@ def test_sera_aggiorna_e_avvisa(tmp_path):
     ops = leggi_operazioni(tmp_path / "dati" / "operazioni.csv")
     assert all(o.stato == "chiusa" for o in ops)
     [(oggetto, html)] = s.invia.inviate
-    assert "aggiornamenti" in oggetto and "sotto lo stop" in html
+    assert "aggiornamenti" in oggetto and "stop toccato" in html and "operazione partita" in html
     assert leggi_oggi(tmp_path / "dati" / "oggi.json")["fatto_sera"] == "2026-10-20"
     assert "Storico" in (tmp_path / "sito" / "index.html").read_text(encoding="utf-8")
 
@@ -148,7 +148,9 @@ def test_sera_durante_la_seduta_non_aggiorna(tmp_path):
     s = servizi()
     s.adesso = lambda: datetime(2026, 10, 20, 14, 0, tzinfo=timezone.utc)
     esegui_sera(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 20), s)
-    assert all(o.stato == "in attesa" for o in leggi_operazioni(tmp_path / "dati" / "operazioni.csv"))
+    ops = leggi_operazioni(tmp_path / "dati" / "operazioni.csv")
+    # la seduta del 19 è chiusa (ingresso registrato), quella del 20 no (il crollo non si applica ancora)
+    assert all(o.data_ingresso == "2026-10-19" and o.stato != "chiusa" for o in ops)
 
 
 def test_mattina_chiede_ultima_seduta(tmp_path):
@@ -163,3 +165,49 @@ def test_mattina_chiede_ultima_seduta(tmp_path):
     s.scarica_prezzi = prezzi
     esegui_mattina(config_piccola(), tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), s)
     assert date(2026, 10, 16) in chieste
+
+
+def test_sera_stesso_giorno_segue_ingresso_vero(tmp_path):
+    """Proposta la mattina del 19, la sera del 19 l'ingresso è all'apertura del 19."""
+    cfg = config_piccola()
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    ops = leggi_operazioni(tmp_path / "dati" / "operazioni.csv")
+    assert all(o.data_segnale == "2026-10-16" for o in ops)
+
+    def barre(simboli, dal):
+        indice = pd.bdate_range(end="2026-10-19", periods=40)
+        df = pd.DataFrame({"Open": 50.0, "High": 50.5, "Low": 49.5, "Close": 50.0, "Volume": 1.0}, index=indice)
+        return {s: df for s in simboli}
+
+    esegui_sera(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi(barre=barre))
+    ops = leggi_operazioni(tmp_path / "dati" / "operazioni.csv")
+    assert all(o.data_ingresso == "2026-10-19" for o in ops)
+
+
+def test_prova_contiene_media_di_tutte(tmp_path):
+    esegui_mattina(config_piccola(), tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    prova = json.loads((tmp_path / "dati" / "prova_ITA.json").read_text(encoding="utf-8"))
+    assert isinstance(prova["media_tutte"], float)
+
+
+def test_quantita_solo_mercati_del_conto(tmp_path):
+    esegui_mattina(config_piccola(), tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    schede = {x["mercato"]: x for x in leggi_oggi(tmp_path / "dati" / "oggi.json")["schede"]}
+    assert schede["ITA"]["quantita"] is None and schede["USA"]["quantita"] > 0
+    assert 0 < schede["USA"]["costo_r"] < 5
+
+
+def test_studio_non_blocca_operazione_vera(tmp_path):
+    cfg = config_piccola()
+    esegui_mattina(dataclasses.replace(cfg, soglia_r=100.0), tmp_path / "dati", tmp_path / "sito",
+                   date(2026, 10, 19), servizi())
+    assert all(o.sotto_soglia for o in leggi_operazioni(tmp_path / "dati" / "operazioni.csv"))
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 20), servizi())
+    ops = leggi_operazioni(tmp_path / "dati" / "operazioni.csv")
+    assert len(ops) == 4 and sum(not o.sotto_soglia for o in ops) == 2
+    # un secondo titolo "solo studio" invece non si apre
+    esegui_mattina(dataclasses.replace(cfg, soglia_r=100.0), tmp_path / "dati2", tmp_path / "sito2",
+                   date(2026, 10, 19), servizi())
+    esegui_mattina(dataclasses.replace(cfg, soglia_r=100.0), tmp_path / "dati2", tmp_path / "sito2",
+                   date(2026, 10, 20), servizi())
+    assert len(leggi_operazioni(tmp_path / "dati2" / "operazioni.csv")) == 2

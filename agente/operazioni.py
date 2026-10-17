@@ -61,8 +61,27 @@ def nuova_operazione(scelta: Scelta, giorno: date) -> Operazione:
         sotto_soglia=scelta.sotto_soglia, resa_attesa=scelta.resa, casi=scelta.casi)
 
 
-def aperta_nel_mercato(ops: list[Operazione], mercato: str) -> Operazione | None:
-    return next((op for op in ops if op.mercato == mercato and op.stato != "chiusa"), None)
+def aperta_nel_mercato(ops: list[Operazione], mercato: str, solo_vere: bool = False) -> Operazione | None:
+    return next((op for op in ops if op.mercato == mercato and op.stato != "chiusa"
+                 and not (solo_vere and op.sotto_soglia)), None)
+
+
+PREZZI = ["riferimento", "r", "stop_iniziale", "pareggio", "prima_uscita", "ingresso", "stop", "prezzo_meta",
+          "prezzo_uscita", "ultimo_prezzo"]
+
+
+def _riscala(op: Operazione, df: pd.DataFrame) -> float:
+    """Yahoo riscala la storia dopo split e dividendi: riporta i livelli sulla stessa scala."""
+    giorno, prezzo = (op.ultimo_giorno, op.ultimo_prezzo) if op.ultimo_giorno else (op.data_segnale, op.riferimento)
+    riga = df[df.index == pd.Timestamp(giorno)]
+    if riga.empty or not prezzo:
+        return 1.0
+    fattore = float(riga["Close"].iloc[0]) / prezzo
+    if abs(fattore - 1) > 0.0005:
+        for campo in PREZZI:
+            if getattr(op, campo) is not None:
+                setattr(op, campo, getattr(op, campo) * fattore)
+    return fattore
 
 
 def _prezzo(op: Operazione, valore: float) -> str:
@@ -95,6 +114,9 @@ def testo_evento(op: Operazione, evento: str) -> str:
     if evento == "uscita_finale":
         return (f"✅ {n}: resto venduto a {_prezzo(op, op.prezzo_uscita)}. "
                 f"Risultato finale {_r(risultato_r(op))}.")
+    if evento == "riscalato":
+        return (f"🔁 {n}: prezzi riadattati (probabile frazionamento delle azioni). Nuovo stop "
+                f"{_prezzo(op, op.stop or op.stop_iniziale)}: controlla che IBKR abbia aggiornato i tuoi ordini.")
     if evento == "senza_dati":
         return (f"⚠️ {n}: nessun dato da Yahoo da {op.giorni_senza_dati} sere. "
                 "Controlla il titolo sull'app di IBKR.")
@@ -123,14 +145,26 @@ def aggiorna_operazioni(ops: list[Operazione],
                 messaggi.append(Messaggio(op.id, op.nome, "senza_dati", testo_evento(op, "senza_dati")))
             continue
         op.giorni_senza_dati = 0
+        if abs(_riscala(op, df) - 1) > 0.2:
+            messaggi.append(Messaggio(op.id, op.nome, "riscalato", testo_evento(op, "riscalato")))
         sma20 = df["Close"].rolling(20).mean()
         dopo = op.ultimo_giorno or op.data_segnale
         for giorno, riga in df.iterrows():
             g = giorno.date()
             if g.isoformat() <= dopo or g > oggi or not chiusa(op.mercato, g):
                 continue
+            # la vendita "domattina" vale solo dopo che l'avviso è partito (sere saltate o recuperate)
+            in_attesa_avviso = op.stato == "uscita domani" and op.data_avviso and g.isoformat() <= op.data_avviso
+            if in_attesa_avviso:
+                op.stato = "meta chiusa"
             eventi = avanza(op, g.isoformat(), riga["Open"], riga["High"], riga["Low"], riga["Close"],
                             sma20.loc[giorno])
+            if in_attesa_avviso:
+                eventi = [e for e in eventi if e != "sotto_media"]
+                if op.stato == "meta chiusa":
+                    op.stato = "uscita domani"
+            if "sotto_media" in eventi:
+                op.data_avviso = oggi.isoformat()
             messaggi += [Messaggio(op.id, op.nome, e, testo_evento(op, e)) for e in eventi]
             if op.stato == "chiusa":
                 break

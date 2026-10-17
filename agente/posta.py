@@ -58,7 +58,11 @@ def email_mattina(schede: list[dict], url_pagina: str) -> tuple[str, str] | None
                  ("Prima uscita (+2R): vendi metà", _prezzo(lv["prima_uscita"], v)),
                  ("Il resto", "vendi dopo una chiusura sotto la media a 20 giorni (ti avviso io)")]
         if quantita:
-            righe.append(("Quantità", f"{quantita:g}".replace(".", ",")))
+            righe.append(("Quantità (conto da 100 €)", f"{quantita:g}".replace(".", ",")))
+        elif quantita == 0:
+            righe.append(("Quantità", "con 100 € non puoi comprarne nemmeno una"))
+        else:
+            righe.append(("Quantità", "mercato non incluso nel tuo conto IBKR: solo simulazione"))
         tabella = "".join(f"<tr><td style='padding:4px 8px'>{html_lib.escape(a)}</td>"
                           f"<td style='padding:4px 8px'><b>{html_lib.escape(b)}</b></td></tr>" for a, b in righe)
         blocchi.append(f"<h3>{html_lib.escape(s['nome'])} ({html_lib.escape(s['simbolo'])})</h3>{studio}"

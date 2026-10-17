@@ -66,7 +66,7 @@ def test_tabella_correzione_e_scarto():
     assert "C" not in tabella.index
     media = (40 - 40 + 29) / 109
     assert tabella.attrs["media"] == pytest.approx(media)
-    assert tabella.loc["A", "resa"] == pytest.approx((40 + 30 * media) / 70)
+    assert tabella.loc["A", "resa"] == pytest.approx(40 / 70)  # prudente: tirata verso 0, non verso la media
     assert tabella.loc["A", "pct_2r"] == 1.0 and tabella.loc["B", "pct_stop"] == 1.0
     assert cerca(tabella, "A")["casi"] == 40 and cerca(tabella, "Z") is None
 

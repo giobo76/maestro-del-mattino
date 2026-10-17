@@ -103,3 +103,16 @@ def test_grafico_copiato(tmp_path):
     disegna_grafico(passeggiata(120), "Campari", origine)
     html = genera(tmp_path, [scheda(grafico=str(origine))])
     assert (tmp_path / "sito" / "grafici" / "ITA.png").exists() and 'src="grafici/ITA.png"' in html
+
+
+def test_scheda_confronto_e_costi(tmp_path):
+    prova = {"ITA": {**PROVA["ITA"], "media_tutte": 0.22}}
+    stat = calcola_statistiche([], CFG, {}, {})
+    html = genera_sito(tmp_path / "sito", {"data": "2026-10-16", "schede": [scheda(costo_r=0.21)]}, [], stat, prova,
+                       datetime(2026, 10, 16, 7, 31)).read_text(encoding="utf-8")
+    assert "media di tutte le operazioni possibili: +0,22R" in html
+    assert "Commissioni stimate: circa 0,21R" in html and "+0,04R" in html  # 0,25 − 0,21
+
+
+def test_scheda_mercato_fuori_conto(tmp_path):
+    assert "non incluso nel tuo conto IBKR" in genera(tmp_path, [scheda(quantita=None, perdita_massima=None)])

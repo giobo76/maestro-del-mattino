@@ -73,7 +73,9 @@ a { color: var(--accento); }
   <p class="dettaglio">Ultima chiusura: {{ s.livelli.riferimento | it_prezzo(v) }}</p>
   <p class="prob">{{ s.resa | it_r }}</p>
   <p class="dettaglio">resa media per operazione nel passato, su {{ s.casi }} operazioni con segnali simili.
-    Stop pieno nel {{ s.pct_stop | it_pct(0) }} dei casi, +2R raggiunto nel {{ s.pct_2r | it_pct(0) }}.</p>
+    Stop pieno nel {{ s.pct_stop | it_pct(0) }} dei casi, +2R raggiunto nel {{ s.pct_2r | it_pct(0) }}.
+    {% if prova.get(s.mercato) and prova[s.mercato].media_tutte is defined %}Per confronto, media di tutte le operazioni possibili: {{ prova[s.mercato].media_tutte | it_r }}.{% endif %}</p>
+  {% if s.costo_r %}<p class="dettaglio">Commissioni stimate: circa {{ s.costo_r | it_num(2) }}R a operazione con il tuo conto, quindi resa dopo i costi circa <b>{{ (s.resa - s.costo_r) | it_r }}</b>.</p>{% endif %}
 
   <h4>Il piano</h4>
   <table class="piano">
@@ -87,6 +89,8 @@ a { color: var(--accento); }
   <p class="dettaglio">Con il tuo conto da 100 €: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
   {% elif s.quantita == 0 %}
   <p class="nota">Il titolo costa più del tuo capitale: con 100 € non puoi comprarne nemmeno una.</p>
+  {% else %}
+  <p class="dettaglio">Mercato non incluso nel tuo conto IBKR: questa operazione è solo simulata.</p>
   {% endif %}
   {% if s.grafico_url %}<img class="grafico" src="{{ s.grafico_url }}" alt="Grafico di {{ s.nome }} con stop e obiettivi">{% endif %}
 

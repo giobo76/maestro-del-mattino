@@ -76,3 +76,10 @@ def test_email_mattina_livelli():
     assert oggetto == "📈 Nuova operazione: Campari, Palantir"
     assert "6,38 €" in html and "7,10 €" in html and "Stop loss" in html
     assert "solo studio" in html and URL in html
+
+
+def test_email_mattina_quantita_zero_e_solo_simulato():
+    _, html = email_mattina([scheda(quantita=0)], URL)
+    assert "nemmeno una" in html
+    _, html = email_mattina([scheda(quantita=None)], URL)
+    assert "non incluso nel tuo conto" in html

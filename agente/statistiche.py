@@ -62,7 +62,7 @@ def _gruppo(ops: list[Operazione]) -> dict:
     return {
         "chiuse": n,
         "resa_media": sum(rese) / n,
-        "pct_stop": sum(o.motivo in ("stop loss", "apertura sotto lo stop") for o in ops) / n,
+        "pct_stop": sum(o.motivo == "stop loss" for o in ops) / n,
         "pct_pareggio": sum(o.motivo == "stop a pareggio" for o in ops) / n,
         "pct_2r": sum(o.prezzo_meta is not None for o in ops) / n,
         "somma_r": sum(rese),

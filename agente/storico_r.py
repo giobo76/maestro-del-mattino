@@ -58,7 +58,8 @@ def costruisci_tabella_r(storico: pd.DataFrame, fino_a: pd.Timestamp | None,
         pct_stop=("esito", lambda e: float((e == "stop").mean())),
         pct_2r=("esito", lambda e: float((e == "prima_uscita").mean())))
     tabella["resa_grezza"] = tabella["somma"] / tabella["casi"]
-    tabella["resa"] = (tabella["somma"] + casi_virtuali * media) / (tabella["casi"] + casi_virtuali)
+    # prudente: con pochi casi la resa viene tirata verso 0 (nessun vantaggio), non verso la media del mercato
+    tabella["resa"] = tabella["somma"] / (tabella["casi"] + casi_virtuali)
     tabella = tabella[tabella["casi"] >= casi_minimi][["casi", "resa_grezza", "resa", "pct_stop", "pct_2r"]]
     tabella.attrs["media"] = media
     return tabella

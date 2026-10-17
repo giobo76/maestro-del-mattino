@@ -1,6 +1,7 @@
 from datetime import date
 
 import pandas as pd
+import pytest
 
 from agente.operazione import Livelli
 from agente.operazioni import (
@@ -39,7 +40,8 @@ def test_aggiorna_percorso_completo():
     ops = [nuova_operazione(scelta(), date(2026, 10, 16))]
     barre = barre_da([("2026-10-19", 100, 105, 99, 104), ("2026-10-20", 104, 109, 103, 108),
                       ("2026-10-21", 103, 103, 100.1, 100.2), ("2026-10-22", 98, 99, 97, 98)])
-    messaggi = aggiorna_operazioni(ops, barre, date(2026, 10, 22), SEMPRE)
+    messaggi = aggiorna_operazioni(ops, barre, date(2026, 10, 21), SEMPRE)  # una sera alla volta
+    messaggi += aggiorna_operazioni(ops, barre, date(2026, 10, 22), SEMPRE)
     assert [m.evento for m in messaggi] == ["ingresso", "pareggio", "prima_uscita", "sotto_media", "uscita_finale"]
     assert ops[0].stato == "chiusa"
     assert "Campari" in messaggi[2].testo and "108,00 €" in messaggi[2].testo
@@ -81,3 +83,27 @@ def test_aperta_nel_mercato():
     assert aperta_nel_mercato([op], "USA") is None
     op.stato = "chiusa"
     assert aperta_nel_mercato([op], "ITA") is None
+
+
+def test_sera_saltata_non_inventa_la_vendita():
+    """Chiusura sotto la media il 21, sera del 21 saltata: la vendita è all'apertura dopo l'avviso (23)."""
+    ops = [nuova_operazione(scelta(), date(2026, 10, 16))]
+    giorni = [("2026-10-19", 100, 105, 99, 104), ("2026-10-20", 104, 109, 103, 108),
+              ("2026-10-21", 103, 103, 100.1, 100.2), ("2026-10-22", 101, 102, 100.5, 101),
+              ("2026-10-23", 99, 100, 98, 99)]
+    aggiorna_operazioni(ops, barre_da(giorni[:2]), date(2026, 10, 20), SEMPRE)
+    eventi = [m.evento for m in aggiorna_operazioni(ops, barre_da(giorni[:4]), date(2026, 10, 22), SEMPRE)]
+    assert eventi == ["sotto_media"] and ops[0].stato == "uscita domani"
+    eventi = [m.evento for m in aggiorna_operazioni(ops, barre_da(giorni), date(2026, 10, 23), SEMPRE)]
+    assert eventi == ["uscita_finale"] and ops[0].prezzo_uscita == 99 and ops[0].data_uscita == "2026-10-23"
+
+
+def test_split_riscala_i_livelli():
+    ops = [nuova_operazione(scelta(), date(2026, 10, 16))]
+    aggiorna_operazioni(ops, barre_da([("2026-10-19", 100, 101, 99, 100)]), date(2026, 10, 19), SEMPRE)
+    # split 10:1: Yahoo riscala tutta la storia
+    df = barre_da([("2026-10-19", 100, 101, 99, 100), ("2026-10-20", 100, 101, 99, 100)])([], None)["CPR.MI"] / 10
+    messaggi = aggiorna_operazioni(ops, lambda s, d: {"CPR.MI": df}, date(2026, 10, 20), SEMPRE)
+    op = ops[0]
+    assert op.stato == "aperta" and op.stop_iniziale == pytest.approx(9.6) and op.ingresso == pytest.approx(10)
+    assert [m.evento for m in messaggi] == ["riscalato"]
