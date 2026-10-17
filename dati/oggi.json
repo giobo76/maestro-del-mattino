@@ -5,6 +5,7 @@
       "mercato": "ITA",
       "nome_mercato": "Borsa Italiana",
       "valuta": "EUR",
+      "nuova": false,
       "simbolo": null,
       "nota": "Borsa chiusa oggi."
     },
@@ -12,10 +13,11 @@
       "mercato": "USA",
       "nome_mercato": "Stati Uniti",
       "valuta": "USD",
+      "nuova": false,
       "simbolo": null,
       "nota": "Borsa chiusa oggi."
     }
   ],
   "fatto_mattina": "2026-10-17",
-  "fatto_sera": "2026-10-17"
+  "fatto_sera": null
 }
