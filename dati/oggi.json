@@ -1,0 +1,21 @@
+{
+  "data": "2026-10-17",
+  "schede": [
+    {
+      "mercato": "ITA",
+      "nome_mercato": "Borsa Italiana",
+      "valuta": "EUR",
+      "simbolo": null,
+      "nota": "Borsa chiusa oggi."
+    },
+    {
+      "mercato": "USA",
+      "nome_mercato": "Stati Uniti",
+      "valuta": "USD",
+      "simbolo": null,
+      "nota": "Borsa chiusa oggi."
+    }
+  ],
+  "fatto_mattina": "2026-10-17",
+  "fatto_sera": null
+}
