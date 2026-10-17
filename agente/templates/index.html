@@ -56,7 +56,7 @@ a { color: var(--accento); }
   <h1>Maestro del mattino</h1>
   <p>Aggiornato il {{ aggiornato }}</p>
 </header>
-<nav><a href="#oggi">Oggi</a><a href="#storico">Com'è andata</a><a href="#statistiche">Statistiche</a></nav>
+<nav><a href="#oggi">Oggi</a><a href="#posizioni">Posizioni aperte</a><a href="#storico">Storico</a><a href="#statistiche">Statistiche</a></nav>
 
 <section id="oggi">
 <h2>Oggi</h2>
@@ -65,17 +65,31 @@ a { color: var(--accento); }
 {% for s in schede %}
 <article class="carta">
   <div class="mercato">{{ s.nome_mercato }}{% if s.sotto_soglia %} <span class="studio">solo studio</span>{% endif %}</div>
-  {% if s.simbolo %}
+  {% if s.nuova %}
+  {% set v = s.valuta %}
   <h3>{{ s.nome }} <small class="dettaglio">({{ s.simbolo }})</small></h3>
-  <p class="dettaglio">Ultima chiusura: {{ s.prezzo_ieri | it_num }} {{ "€" if s.valuta == "EUR" else "$" }}</p>
-  <p class="prob">{{ s.prob | it_pct }}</p>
-  <p class="dettaglio">probabilità storica di salire tra apertura e chiusura, su {{ s.casi }} casi simili.
-    Guadagno medio in questi casi: {{ s.rend_medio | it_pct(2, true) }}</p>
-  {% if s.grafico_url %}<img class="grafico" src="{{ s.grafico_url }}" alt="Grafico di {{ s.nome }} negli ultimi 3 mesi">{% endif %}
+  <p class="dettaglio">Ultima chiusura: {{ s.livelli.riferimento | it_prezzo(v) }}</p>
+  <p class="prob">{{ s.resa | it_r }}</p>
+  <p class="dettaglio">resa media per operazione nel passato, su {{ s.casi }} operazioni con segnali simili.
+    Stop pieno nel {{ s.pct_stop | it_pct(0) }} dei casi, +2R raggiunto nel {{ s.pct_2r | it_pct(0) }}.</p>
+
+  <h4>Il piano</h4>
+  <div class="tabella"><table>
+    <tr><td>Ingresso</td><td><b>al mercato, all'apertura</b></td></tr>
+    <tr><td>Stop loss</td><td><b>{{ s.livelli.stop | it_prezzo(v) }}</b> ({{ ((s.livelli.stop / s.livelli.riferimento) - 1) | it_pct(1, true) }})</td></tr>
+    <tr><td>Pareggio (+1R): sposta lo stop all'ingresso</td><td><b>{{ s.livelli.pareggio | it_prezzo(v) }}</b></td></tr>
+    <tr><td>Prima uscita (+2R): vendi metà</td><td><b>{{ s.livelli.prima_uscita | it_prezzo(v) }}</b> ({{ ((s.livelli.prima_uscita / s.livelli.riferimento) - 1) | it_pct(1, true) }})</td></tr>
+    <tr><td>Il resto</td><td>dopo una chiusura sotto la media a 20 giorni</td></tr>
+  </table></div>
+  {% if s.quantita %}
+  <p class="dettaglio">Con il tuo conto da 100 €: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
+  {% elif s.quantita == 0 %}
+  <p class="nota">Il titolo costa più del tuo capitale: con 100 € non puoi comprarne nemmeno una.</p>
+  {% endif %}
+  {% if s.grafico_url %}<img class="grafico" src="{{ s.grafico_url }}" alt="Grafico di {{ s.nome }} con stop e obiettivi">{% endif %}
 
   <h4>I segnali</h4>
   <ul>{% for segnale in s.situazione | leggi_segnali %}<li>{{ segnale }}</li>{% endfor %}</ul>
-
   {% if s.testi %}
   <h4>Perché questo titolo</h4>
   <p>{{ s.testi.perche }}</p>
@@ -84,14 +98,16 @@ a { color: var(--accento); }
   <h4>Parola del giorno</h4>
   <p class="parola"><b>{{ s.testi.parola }}</b>: {{ s.testi.parola_spiegazione }}</p>
   {% else %}
-  <p class="nota">Spiegazione non disponibile oggi: restano validi i numeri e i segnali qui sopra.</p>
+  <p class="nota">Spiegazione non disponibile oggi: restano validi i numeri e il piano qui sopra.</p>
   {% endif %}
-
   <h4>Notizie delle ultime 24 ore{% if s.giudizio_notizie %}: giudizio {{ s.giudizio_notizie }}{% endif %}</h4>
   {% if s.notizie %}
   <ul>{% for n in s.notizie[:5] %}<li><a href="{{ n.link }}" rel="noopener" target="_blank">{{ n.titolo }}</a> <span class="dettaglio">({{ n.fonte }})</span></li>{% endfor %}</ul>
   {% else %}<p class="dettaglio">Nessuna notizia trovata.</p>{% endif %}
   {% if s.scartati %}<p class="dettaglio">Scartati per notizie negative: {{ s.scartati | join(", ") }}</p>{% endif %}
+  {% elif s.posizione %}
+  <h3>{{ s.posizione.nome }}</h3>
+  <p>Stato: <b>{{ s.posizione.stato }}</b> · ingresso {{ s.posizione.ingresso }} · stop {{ s.posizione.stop }} · ultimo {{ s.posizione.ultimo }} · <b>{{ s.posizione.r_attuale }}</b></p>
   {% endif %}
   {% if s.nota %}<p class="nota">{{ s.nota }}</p>{% endif %}
 </article>
@@ -100,82 +116,69 @@ a { color: var(--accento); }
 {% endfor %}
 </section>
 
+<section id="posizioni">
+<h2>Posizioni aperte</h2>
+{% if posizioni %}
+<div class="carta tabella">
+<table>
+  <thead><tr><th>Titolo</th><th>Stato</th><th>Ingresso</th><th>Stop</th><th>Ultimo</th><th>Risultato</th></tr></thead>
+  <tbody>{% for p in posizioni %}<tr><td>{{ p.nome }}{% if p.studio %} (studio){% endif %}</td><td>{{ p.stato }}</td><td>{{ p.ingresso }}</td><td>{{ p.stop }}</td><td>{{ p.ultimo }}</td><td>{{ p.r_attuale }}</td></tr>{% endfor %}</tbody>
+</table>
+</div>
+{% else %}<p class="carta">Nessuna posizione aperta.</p>{% endif %}
+</section>
+
 <section id="storico">
-<h2>Com'è andata</h2>
+<h2>Storico</h2>
 {% if storico %}
 <div class="carta tabella">
 <table>
-  <thead><tr><th>Data</th><th>Mercato</th><th>Titolo</th><th>Prob.</th><th>Apertura</th><th>Chiusura</th><th>Risultato</th></tr></thead>
-  <tbody>
-  {% for r in storico %}
-  <tr><td>{{ r.data }}</td><td>{{ r.mercato }}</td><td>{{ r.nome }}</td><td>{{ r.prob }}</td>
-      <td>{{ r.apertura }}</td><td>{{ r.chiusura }}</td><td>{{ r.esito }}</td></tr>
-  {% endfor %}
-  </tbody>
+  <thead><tr><th>Ingresso</th><th>Titolo</th><th>Prezzo ingresso</th><th>Ultima uscita</th><th>Risultato</th><th>Motivo</th></tr></thead>
+  <tbody>{% for r in storico %}<tr><td>{{ r.data }}</td><td>{{ r.nome }}{% if r.studio %} (studio){% endif %}</td><td>{{ r.ingresso }}</td><td>{{ r.uscita }}</td><td>{{ r.risultato }}</td><td>{{ r.motivo }}</td></tr>{% endfor %}</tbody>
 </table>
 </div>
-{% else %}<p class="carta">Ancora nessuna previsione.</p>{% endif %}
+{% else %}<p class="carta">Ancora nessuna operazione chiusa.</p>{% endif %}
 </section>
 
 <section id="statistiche">
 <h2>Statistiche</h2>
-{% if stat.totale == 0 %}
-<p class="carta">Ancora nessun risultato: le statistiche compaiono dopo la prima verifica serale.</p>
+{% set c = stat.consigli %}
+{% if c.chiuse == 0 and stat.studio.chiuse == 0 %}
+<p class="carta">Ancora nessuna operazione chiusa: le statistiche compaiono dopo la prima.</p>
 {% else %}
 <div class="cifre">
-  <div class="cifra"><b>{{ stat.percentuale | it_pct }}</b><span>previsioni azzeccate ({{ stat.azzeccate }} su {{ stat.totale }})</span></div>
-  <div class="cifra"><b>{{ stat.sopra_soglia.percentuale | it_pct }}</b><span>consigli sopra soglia ({{ stat.sopra_soglia.azzeccate }} su {{ stat.sopra_soglia.totale }})</span></div>
-  <div class="cifra"><b>{{ stat.studio.percentuale | it_pct }}</b><span>titoli "solo studio" ({{ stat.studio.azzeccate }} su {{ stat.studio.totale }})</span></div>
-  {% for m, c in stat.per_mercato.items() %}{% if c.totale %}
-  <div class="cifra"><b>{{ c.percentuale | it_pct }}</b><span>{{ m }}: {{ c.azzeccate }} su {{ c.totale }}</span></div>
-  {% endif %}{% endfor %}
+  <div class="cifra"><b>{{ c.resa_media | it_r }}</b><span>resa media dei consigli veri ({{ c.chiuse }} chiuse)</span></div>
+  <div class="cifra"><b>{{ c.somma_r | it_r }}</b><span>totale dei consigli veri</span></div>
+  <div class="cifra"><b>{{ stat.studio.resa_media | it_r }}</b><span>resa media "solo studio" ({{ stat.studio.chiuse }} chiuse)</span></div>
 </div>
-
+{% if c.chiuse %}
+<div class="carta" style="margin-top:16px">
+  <h4>Come sono finite le operazioni vere</h4>
+  <p>Stop pieno {{ c.pct_stop | it_pct(0) }} · chiuse a pareggio {{ c.pct_pareggio | it_pct(0) }} · arrivate a +2R {{ c.pct_2r | it_pct(0) }}</p>
+</div>
+{% endif %}
+{% endif %}
 <div class="carta" style="margin-top:16px">
   <h4>Conto simulato da {{ stat.conto_simulato.iniziale | it_num(0) }} €</h4>
-  <p>Investendo ogni giorno tutto nei titoli consigliati sopra soglia (esclusi quelli "solo studio"), commissioni comprese, oggi avresti
-    <b>{{ stat.conto_simulato.finale_netto | it_num }} €</b> dopo le tasse
-    ({{ (stat.conto_simulato.finale_netto / stat.conto_simulato.iniziale - 1) | it_pct(2, true) }}).</p>
+  <p>Seguendo tutti i consigli veri, commissioni comprese, avresti <b>{{ stat.conto_simulato.finale_netto | it_num }} €</b> dopo le tasse.</p>
   <h4>Il tuo conto IBKR da {{ stat.conto_ibkr.iniziale | it_num(0) }} €</h4>
-  <p>Con commissioni IBKR, cambio euro/dollaro e tasse del 26% avresti
-    <b>{{ stat.conto_ibkr.finale_netto | it_num }} €</b>
-    ({{ (stat.conto_ibkr.finale_netto / stat.conto_ibkr.iniziale - 1) | it_pct(2, true) }}).</p>
+  <p>Con commissioni IBKR (ingresso più una o due uscite), cambio e tasse avresti <b>{{ stat.conto_ibkr.finale_netto | it_num }} €</b>.</p>
+  <p class="dettaglio">Attenzione: con 100 € sui titoli italiani le commissioni minime (1,25 € a ordine, fino a 3 ordini) possono valere quasi 1R.</p>
   {% if stat.indici %}
   <h4>Confronto: comprare l'indice e non fare nulla</h4>
   <ul>{% for m, r in stat.indici.items() %}<li>{{ "FTSE MIB" if m == "ITA" else "S&P 500" }}: {{ r | it_pct(2, true) }}</li>{% endfor %}</ul>
   {% endif %}
 </div>
-
-<div class="carta tabella">
-  <h4>Le probabilità annunciate sono rispettate?</h4>
-  <table>
-    <thead><tr><th>Probabilità annunciata</th><th>Previsioni</th><th>Risultato reale</th></tr></thead>
-    <tbody>{% for f in stat.calibrazione %}<tr><td>{{ f.fascia }}</td><td>{{ f.previsioni }}</td><td>{{ f.percentuale | it_pct }}</td></tr>{% endfor %}</tbody>
-  </table>
-</div>
-
-{% if stat.segnali %}
-<div class="carta tabella">
-  <h4>Quali segnali hanno funzionato (almeno 5 casi)</h4>
-  <table>
-    <thead><tr><th>Segnale</th><th>Casi</th><th>Saliti</th></tr></thead>
-    <tbody>{% for g in stat.segnali %}<tr><td>{{ (g.segnale | leggi_segnali)[0] }}</td><td>{{ g.casi }}</td><td>{{ g.percentuale | it_pct }}</td></tr>{% endfor %}</tbody>
-  </table>
-</div>
-{% endif %}
-{% endif %}
-
 {% if prova %}
 <div class="carta">
   <h4>Prova sull'ultimo anno (dati che il calcolo non aveva visto)</h4>
   {% for m, p in prova.items() %}
   <p><b>{{ "Borsa Italiana" if m == "ITA" else "Stati Uniti" }}</b>, dal {{ p.dal }} al {{ p.al }}:
-  {% if p.giorni_con_scelta %}
-    {{ p.giorni_con_scelta }} giorni con un consiglio, probabilità media annunciata {{ p.prob_media_annunciata | it_pct }},
-    risultato reale {{ p.percentuale_reale | it_pct }}, guadagno medio per giorno {{ p.rend_medio | it_pct(2, true) }} (prima dei costi).
-  {% else %}nessun giorno sopra la soglia.{% endif %}</p>
+  {% if p.operazioni %}
+    {{ p.operazioni }} operazioni chiuse, resa annunciata {{ p.resa_annunciata | it_r }}, resa reale <b>{{ p.resa_reale | it_r }}</b>
+    (stop pieno {{ p.pct_stop | it_pct(0) }}, +2R {{ p.pct_2r | it_pct(0) }}), prima dei costi.
+  {% else %}nessuna operazione sopra la soglia.{% endif %}</p>
   {% endfor %}
-  <p class="dettaglio">I segnali migliori arrivano di solito al 53–60% di probabilità.</p>
 </div>
 {% endif %}
 </section>

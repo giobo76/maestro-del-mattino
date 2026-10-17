@@ -100,3 +100,10 @@ def calcola_statistiche(ops: list[Operazione], cfg: Config, cambi: dict[date, fl
             stat["indici"][m] = _rend_indice(serie, min(o.data_ingresso for o in del_mercato),
                                              max(o.data_uscita for o in del_mercato))
     return stat
+
+
+def quantita(mercato: str, capitale_eur: float, prezzo: float, cambio_eur_usd: float) -> float:
+    """Azioni acquistabili con il capitale: intere in Italia, frazioni (4 decimali) negli USA."""
+    if mercato == "ITA":
+        return int(capitale_eur // prezzo)
+    return round(capitale_eur * cambio_eur_usd / prezzo, 4)

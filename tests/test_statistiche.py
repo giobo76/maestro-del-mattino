@@ -72,3 +72,10 @@ def test_percentuali_esiti():
     assert c["pct_stop"] == pytest.approx(1 / 3) and c["pct_pareggio"] == pytest.approx(1 / 3)
     assert c["pct_2r"] == pytest.approx(1 / 3)
     assert stat["studio"]["chiuse"] == 1 and stat["aperte"] == 1
+
+
+def test_quantita():
+    from agente.statistiche import quantita
+    assert quantita("ITA", 100, 6.62, 1.1) == 15
+    assert quantita("ITA", 100, 400, 1.1) == 0
+    assert quantita("USA", 100, 200, 1.1) == pytest.approx(0.55)
