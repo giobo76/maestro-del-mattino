@@ -1,92 +1,74 @@
-from datetime import date
-
 import pandas as pd
 import pytest
 
-from agente.archivio import aggiungi_previsioni, leggi_previsioni
 from agente.config import carica_config
-from agente.scelta import Scelta
-from agente.statistiche import calcola_statistiche, costo_andata_ritorno, simula_conto
-from agente.verifica import registra_esiti
+from agente.operazione import Operazione, avanza
+from agente.statistiche import calcola_statistiche, costo_ordine, simula_conto
 
-COSTI = carica_config("config.yaml").costi
+CFG = carica_config("config.yaml")
+COSTI = CFG.costi
 ZERO = {k: 0 for k in COSTI}
 
 
-def prev_con_esiti(esiti, mercato="ITA", prob=0.57, situazione="trend=su|rsi=normale"):
-    """esiti: lista di (giorno, apertura, chiusura)."""
-    prev = leggi_previsioni("non-esiste.csv")
-    for giorno, _, _ in esiti:
-        prev = aggiungi_previsioni(prev, giorno, [Scelta(mercato, "X", "X", prob, 100, 0.0, situazione)])
-    for giorno, apertura, chiusura in esiti:
-        prev = registra_esiti(prev, lambda s, g, a=apertura, c=chiusura, d=giorno: {"X": (a, c)} if g == d else {},
-                              giorno)
-    return prev
+def op(giorni, mercato="ITA", studio=False, inizio="2026-10-01"):
+    """giorni: lista di (o, h, l, c, sma20). Riferimento 100, r 4: stop 96, pareggio 104, +2R 108."""
+    o = Operazione(f"{inizio}-{mercato}", mercato, "X", "X", inizio, 100.0, 4.0, 96.0, 104.0, 108.0,
+                   studio, 0.2, 100)
+    for i, g in enumerate(giorni):
+        avanza(o, str((pd.Timestamp(inizio) + pd.Timedelta(days=i + 1)).date()), *g)
+    return o
 
 
-def test_costo_ita_minimo():
-    assert costo_andata_ritorno("ITA", 100, 25, COSTI, 1.1) == pytest.approx(2.50)
+STOP = [(100, 101, 95, 96, 0)]                                         # −1R, −4%
+PAREGGIO = [(100, 105, 99, 104, 0), (103, 103, 99, 100, 0)]            # 0R
+COMPLETA = [(100, 105, 99, 104, 101), (104, 109, 103, 108, 101), (106, 106, 104.5, 105, 106), (104, 104, 103, 104, 106)]
+# metà a 108 (+2R), resto chiuso a 104 (+1R): rendimento medio 6%
 
 
-def test_costo_ita_percentuale():
-    assert costo_andata_ritorno("ITA", 10_000, 25, COSTI, 1.1) == pytest.approx(10.00)
+def test_costo_ordine_ita_minimo():
+    assert costo_ordine("ITA", 100, 25, COSTI, 1.1) == pytest.approx(1.25)
 
 
 def test_costo_usa_piccolo():
-    assert costo_andata_ritorno("USA", 100, 200, COSTI, 1.10) == pytest.approx(0.70 / 1.10 + 0.06)
+    assert costo_ordine("USA", 100, 200, COSTI, 1.10) == pytest.approx(0.35 / 1.10 + 0.03)
 
 
-def test_simula_conto_tasse():
-    prev = prev_con_esiti([(date(2026, 10, 1), 10, 11), (date(2026, 10, 2), 10, 9.5)])
-    conto = simula_conto(prev, {"ITA": 100}, ZERO, {}, 0.26)
-    assert conto["finale_lordo"] == pytest.approx(104.5)
-    assert conto["tasse"] == pytest.approx(1.17)
-    assert conto["finale_netto"] == pytest.approx(103.33)
-    assert len(conto["andamento"]) == 2
+def test_conto_con_meta():
+    conto = simula_conto([op(COMPLETA)], {"ITA": 100}, ZERO, {}, 0)
+    assert conto["finale_lordo"] == pytest.approx(106)
 
 
-def test_simula_conto_perdita_niente_tasse():
-    prev = prev_con_esiti([(date(2026, 10, 1), 10, 9)])
-    conto = simula_conto(prev, {"ITA": 100}, ZERO, {}, 0.26)
-    assert conto["tasse"] == 0 and conto["finale_netto"] == pytest.approx(90)
+def test_conto_costi_ordini():
+    conto = simula_conto([op(COMPLETA)], {"ITA": 100}, COSTI, {}, 0)
+    assert conto["finale_lordo"] == pytest.approx(106 - 1.25 * 3)  # ingresso + due uscite
+    conto = simula_conto([op(STOP)], {"ITA": 100}, COSTI, {}, 0)
+    assert conto["finale_lordo"] == pytest.approx(96 - 1.25 * 2)
 
 
-def test_simula_conto_con_costi_ibkr():
-    prev = prev_con_esiti([(date(2026, 10, 1), 10, 10.15)])
-    conto = simula_conto(prev, {"ITA": 100}, COSTI, {}, 0.26)
-    assert conto["finale_lordo"] == pytest.approx(101.5 - 2.5)  # +1,5% mangiato dalle commissioni
+def test_conto_esclude_studio_e_aperte():
+    aperta = op([(100, 101, 99, 100, 0)])
+    conto = simula_conto([op(STOP, studio=True), aperta], {"ITA": 100}, ZERO, {}, 0.26)
+    assert conto["finale_netto"] == pytest.approx(100) and conto["andamento"] == []
+
+
+def test_tasse_sul_guadagno():
+    conto = simula_conto([op(COMPLETA)], {"ITA": 100}, ZERO, {}, 0.26)
+    assert conto["tasse"] == pytest.approx(1.56) and conto["finale_netto"] == pytest.approx(104.44)
 
 
 def test_statistiche_vuote():
-    stat = calcola_statistiche(leggi_previsioni("non-esiste.csv"), carica_config("config.yaml"), {}, {})
-    assert stat["totale"] == 0 and stat["percentuale"] is None
-    assert stat["conto_simulato"]["finale_netto"] == pytest.approx(1000)
+    stat = calcola_statistiche([], CFG, {}, {})
+    assert stat["consigli"]["chiuse"] == 0 and stat["consigli"]["resa_media"] is None
+    assert stat["aperte"] == 0 and stat["conto_simulato"]["finale_netto"] == pytest.approx(1000)
 
 
-def test_percentuali_e_calibrazione():
-    esiti = [(date(2026, 10, d), 10, 11 if d % 2 else 9) for d in range(1, 11)]
-    stat = calcola_statistiche(prev_con_esiti(esiti, prob=0.59), carica_config("config.yaml"), {}, {})
-    assert stat["totale"] == 10 and stat["azzeccate"] == 5 and stat["percentuale"] == 0.5
-    assert stat["per_mercato"]["ITA"]["totale"] == 10
-    fascia = [f for f in stat["calibrazione"] if f["previsioni"] > 0]
-    assert len(fascia) == 1 and fascia[0]["fascia"] == "58–61%" and fascia[0]["percentuale"] == 0.5
-    assert {"segnale": "trend=su", "casi": 10, "percentuale": 0.5} in stat["segnali"]
-
-
-def test_rendimento_indice():
-    esiti = [(date(2026, 10, 1), 10, 11), (date(2026, 10, 5), 10, 11)]
-    indice = pd.Series([100.0, 102.0, 103.0, 110.0],
-                       index=pd.to_datetime(["2026-09-30", "2026-10-01", "2026-10-02", "2026-10-05"]))
-    stat = calcola_statistiche(prev_con_esiti(esiti), carica_config("config.yaml"), {}, {"ITA": indice})
-    assert stat["indici"]["ITA"] == pytest.approx(110 / 100 - 1)
-
-
-def test_conti_solo_sopra_soglia():
-    prev = prev_con_esiti([(date(2026, 10, 1), 10, 11), (date(2026, 10, 2), 10, 5)])
-    prev.loc[prev["data"] == "2026-10-02", "sotto_soglia"] = True
-    stat = calcola_statistiche(prev, carica_config("config.yaml"), {}, {})
-    assert stat["totale"] == 2
-    assert stat["sopra_soglia"]["totale"] == 1 and stat["studio"]["totale"] == 1
-    conto = simula_conto(prev[~prev["sotto_soglia"]], {"ITA": 100}, ZERO, {}, 0)
-    assert stat["conto_simulato"]["andamento"][-1][0] == "2026-10-01"
-    assert conto["finale_lordo"] == pytest.approx(110)
+def test_percentuali_esiti():
+    ops = [op(STOP), op(PAREGGIO, inizio="2026-10-05"), op(COMPLETA, inizio="2026-10-10"),
+           op(STOP, studio=True, inizio="2026-10-20"), op([(100, 101, 99, 100, 0)], inizio="2026-10-25")]
+    stat = calcola_statistiche(ops, CFG, {}, {})
+    c = stat["consigli"]
+    assert c["chiuse"] == 3 and c["somma_r"] == pytest.approx(-1 + 0 + 1.5)
+    assert c["resa_media"] == pytest.approx(0.5 / 3)
+    assert c["pct_stop"] == pytest.approx(1 / 3) and c["pct_pareggio"] == pytest.approx(1 / 3)
+    assert c["pct_2r"] == pytest.approx(1 / 3)
+    assert stat["studio"]["chiuse"] == 1 and stat["aperte"] == 1
