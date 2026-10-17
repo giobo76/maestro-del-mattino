@@ -55,7 +55,9 @@ def _per_simbolo(tabella: pd.DataFrame, simbolo: str) -> pd.DataFrame | None:
     return df.dropna(subset=["Open", "Close"])
 
 
-def scarica_prezzi(simboli: list[str], anni: int, oggi: date, pausa_s: float = 5) -> dict[str, pd.DataFrame]:
+def scarica_prezzi(simboli: list[str], anni: int, oggi: date, pausa_s: float = 5,
+                   ultima: date | None = None) -> dict[str, pd.DataFrame]:
+    """ultima: data dell'ultima seduta attesa; i titoli fermi a una data precedente vengono esclusi."""
     tabella = _scarica(simboli, 3, pausa_s, period=f"{anni}y")
     risultato = {}
     for simbolo in simboli:
@@ -65,8 +67,22 @@ def scarica_prezzi(simboli: list[str], anni: int, oggi: date, pausa_s: float = 5
         if df is None or len(df) < RIGHE_MINIME:
             log.warning("Titolo %s escluso: dati insufficienti", simbolo)
             continue
+        if ultima is not None and df.index[-1].date() != ultima:
+            log.warning("Titolo %s escluso: ultimo dato del %s invece del %s", simbolo, df.index[-1].date(), ultima)
+            continue
         risultato[simbolo] = df
+    if not risultato:
+        raise DatiNonDisponibili("Nessun titolo con dati aggiornati")
     return risultato
+
+
+def scarica_chiusure(simbolo: str, dal: date) -> pd.Series:
+    """Chiusure giornaliere da una settimana prima di `dal` a oggi."""
+    tabella = _scarica([simbolo], 3, 5, start=(dal - timedelta(days=7)).isoformat())
+    df = _per_simbolo(tabella, simbolo)
+    if df is None or df.empty:
+        raise DatiNonDisponibili(f"Nessun dato per {simbolo}")
+    return df["Close"]
 
 
 def scarica_prezzi_giorno(simboli: list[str], giorno: date) -> dict[str, tuple[float, float]]:

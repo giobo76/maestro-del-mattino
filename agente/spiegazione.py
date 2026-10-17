@@ -85,6 +85,10 @@ def scrivi_testi(cervello: Cervello | None, scheda: dict, parole_gia_usate: list
         f"Guadagno medio storico in questi casi: {_pct(scheda['rend_medio'], 2, '+')}\n"
         f"Segnali: {scheda['situazione']}\n"
         f"Notizie delle ultime 24 ore:\n{notizie}\n\n"
+        + ("ATTENZIONE: la probabilità è sotto la soglia del 55%: è un titolo solo per studio, non un "
+           "consiglio di investimento. Dillo chiaramente nella prima frase di 'perche'.\n\n"
+           if scheda.get("sotto_soglia") else "")
+        +
         "Scrivi per un principiante, in italiano semplice. Rispondi solo con JSON con le chiavi "
         '"perche", "rischio", "parola", "parola_spiegazione". '
         "'perche': 4-5 frasi che spiegano i segnali e le notizie. "

@@ -6,7 +6,9 @@ import pandas as pd
 import pytest
 
 from agente import dati
-from agente.dati import DatiNonDisponibili, scarica_notizie, scarica_prezzi, scarica_prezzi_giorno
+from agente.dati import (
+    DatiNonDisponibili, scarica_chiusure, scarica_notizie, scarica_prezzi, scarica_prezzi_giorno,
+)
 
 
 def download_finto(tabelle):
@@ -97,3 +99,30 @@ def test_notizie_italiane_solo_google(monkeypatch):
     assert len(url_chiesti) == 1 and "hl=it" in url_chiesti[0]
     assert len(notizie) == 10
     assert notizie[0].titolo == "Eni 0"
+
+
+def test_titolo_fermo_escluso(monkeypatch):
+    attivo, fermo = tabella(80), tabella(60)
+    monkeypatch.setattr(dati.yf, "download", download_finto({"AAA": attivo, "OLD": fermo}))
+    ultima = attivo.index[-1].date()
+    risultato = scarica_prezzi(["AAA", "OLD"], 1, date(2030, 1, 1), pausa_s=0, ultima=ultima)
+    assert set(risultato) == {"AAA"}
+
+
+def test_tutti_fermi_dati_non_disponibili(monkeypatch):
+    monkeypatch.setattr(dati.yf, "download", download_finto({"AAA": tabella(80)}))
+    with pytest.raises(DatiNonDisponibili):
+        scarica_prezzi(["AAA"], 1, date(2030, 1, 1), pausa_s=0, ultima=date(2029, 12, 31))
+
+
+def test_chiusure_dal_giorno_chiesto(monkeypatch):
+    chiesto = {}
+
+    def finto(simboli, **kwargs):
+        chiesto.update(kwargs)
+        return download_finto({"^GSPC": tabella(80)})(simboli)
+
+    monkeypatch.setattr(dati.yf, "download", finto)
+    serie = scarica_chiusure("^GSPC", date(2024, 3, 10))
+    assert chiesto["start"] == "2024-03-03"
+    assert len(serie) == 80

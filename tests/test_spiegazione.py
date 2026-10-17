@@ -65,3 +65,12 @@ def test_prompt_contiene_parole_usate():
     cervello = CervelloFinto(TESTI_OK)
     scrivi_testi(cervello, SCHEDA, ["RSI", "volumi"])
     assert "RSI" in cervello.prompt[0] and "57,0%" in cervello.prompt[0] and "+0,40%" in cervello.prompt[0]
+
+
+def test_prompt_avvisa_solo_studio():
+    cervello = CervelloFinto(TESTI_OK)
+    scrivi_testi(cervello, {**SCHEDA, "sotto_soglia": True}, [])
+    assert "solo per studio" in cervello.prompt[0]
+    cervello = CervelloFinto(TESTI_OK)
+    scrivi_testi(cervello, SCHEDA, [])
+    assert "solo per studio" not in cervello.prompt[0]

@@ -19,3 +19,17 @@ def _calendario(codice: str):
 
 def borsa_aperta(calendario: str, giorno: date) -> bool:
     return bool(_calendario(calendario).is_session(giorno.isoformat()))
+
+
+def seduta_precedente(calendario: str, giorno: date) -> date:
+    cal = _calendario(calendario)
+    seduta = cal.date_to_session(giorno.isoformat(), direction="next")
+    return cal.previous_session(seduta).date()
+
+
+def seduta_chiusa(calendario: str, giorno: date, adesso: datetime) -> bool:
+    """Vero se la seduta del giorno è terminata (o non c'era)."""
+    cal = _calendario(calendario)
+    if not cal.is_session(giorno.isoformat()):
+        return True
+    return adesso >= cal.session_close(giorno.isoformat()).to_pydatetime()

@@ -47,6 +47,20 @@ def test_pagina_sotto_soglia(tmp_path):
     assert "Sotto soglia: solo per studio, non per investire." in html and "Eni" in html
 
 
+def test_pagina_mostra_data_analisi(tmp_path):
+    html = genera(tmp_path, [scheda()])
+    assert "Analisi del 16/10/2026" in html and "Ultima chiusura" in html
+    assert "non c'è una nuova analisi" not in html
+
+
+def test_pagina_analisi_vecchia(tmp_path):
+    prev = leggi_previsioni("non-esiste.csv")
+    stat = calcola_statistiche(prev, CFG, {}, {})
+    html = genera_sito(tmp_path / "sito", {"data": "2026-10-15", "schede": [scheda()]}, prev, stat, PROVA,
+                       datetime(2026, 10, 16, 22, 31)).read_text(encoding="utf-8")
+    assert "Oggi non c'è una nuova analisi (borsa chiusa o problema tecnico)" in html
+
+
 def test_pagina_senza_testi(tmp_path):
     assert "Spiegazione non disponibile oggi" in genera(tmp_path, [scheda(testi=None)])
 

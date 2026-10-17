@@ -77,6 +77,10 @@ def disegna_grafico(prezzi: pd.DataFrame, nome: str, percorso: Path) -> None:
     plt.close(figura)
 
 
+def _data_it(iso: str | None) -> str | None:
+    return datetime.fromisoformat(iso).strftime("%d/%m/%Y") if iso else None
+
+
 def _storico(prev: pd.DataFrame) -> list[dict]:
     righe = []
     for _, r in prev.sort_values(["data", "mercato"], ascending=[False, True]).iterrows():
@@ -106,7 +110,8 @@ def genera_sito(cartella: Path, oggi: dict, prev: pd.DataFrame, stat: dict, prov
     ambiente = Environment(loader=FileSystemLoader(CARTELLA_TEMPLATE), autoescape=select_autoescape())
     ambiente.filters.update(it_num=it_num, it_pct=it_pct, leggi_segnali=leggi_segnali)
     html = ambiente.get_template("index.html").render(
-        data=oggi.get("data"), aggiornato=aggiornato.strftime("%d/%m/%Y alle %H:%M"),
+        data=_data_it(oggi.get("data")), analisi_vecchia=oggi.get("data") != aggiornato.date().isoformat(),
+        aggiornato=aggiornato.strftime("%d/%m/%Y alle %H:%M"),
         schede=schede, storico=_storico(prev), stat=stat, prova=prova, footer=FOOTER)
     percorso = cartella / "index.html"
     percorso.write_text(html, encoding="utf-8")

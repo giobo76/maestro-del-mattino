@@ -5,7 +5,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Callable
 
@@ -15,7 +15,7 @@ from agente import dati
 from agente.archivio import (
     aggiungi_previsioni, leggi_oggi, leggi_previsioni, salva_oggi, salva_previsioni,
 )
-from agente.calendario import ROMA, adesso_roma, borsa_aperta
+from agente.calendario import ROMA, adesso_roma, borsa_aperta, seduta_chiusa, seduta_precedente
 from agente.config import Config, carica_config
 from agente.dati import DatiNonDisponibili
 from agente.pagina import disegna_grafico, genera_sito
@@ -38,15 +38,14 @@ class Servizi:
     cervello: Cervello | None
     cambi: Callable[[date, date], dict[date, float]]
     indici: Callable[[str, date], pd.Series | None]
+    adesso: Callable[[], datetime] = lambda: datetime.now(timezone.utc)
 
 
 def _chiusure(simbolo: str, dal: date) -> pd.Series | None:
     try:
-        tabella = dati.scarica_prezzi([simbolo], 1, date.today() + timedelta(days=1))
+        return dati.scarica_chiusure(simbolo, dal)
     except DatiNonDisponibili:
         return None
-    df = tabella.get(simbolo)
-    return None if df is None else df.loc[df.index >= pd.Timestamp(dal - timedelta(days=7)), "Close"]
 
 
 def _cambi(dal: date, al: date) -> dict[date, float]:
@@ -128,7 +127,8 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             schede.append({**base, "simbolo": None, "nota": "Borsa chiusa oggi."})
             continue
         try:
-            prezzi = servizi.scarica_prezzi(list(mercato.titoli), 1, oggi)
+            prezzi = servizi.scarica_prezzi(list(mercato.titoli), 1, oggi,
+                                            ultima=seduta_precedente(mercato.calendario, oggi))
         except DatiNonDisponibili:
             log.error("Prezzi %s non disponibili", codice)
             schede.append({**base, "simbolo": None, "nota": "Dati non disponibili oggi."})
@@ -168,7 +168,9 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
 def esegui_sera(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: date,
                 servizi: Servizi) -> None:
     prev = registra_esiti(leggi_previsioni(cartella_dati / "previsioni.csv"),
-                          servizi.scarica_prezzi_giorno, oggi)
+                          servizi.scarica_prezzi_giorno, oggi,
+                          chiusa=lambda m, giorno: seduta_chiusa(cfg.mercati[m].calendario, giorno,
+                                                                 servizi.adesso()))
     salva_previsioni(prev, cartella_dati / "previsioni.csv")
     oggi_json = leggi_oggi(cartella_dati / "oggi.json") or {"data": oggi.isoformat(), "schede": []}
     oggi_json["fatto_sera"] = oggi.isoformat()

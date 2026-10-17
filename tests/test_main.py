@@ -29,7 +29,7 @@ def config_piccola():
 
 
 def servizi(rotto=None):
-    def prezzi(simboli, anni, oggi):
+    def prezzi(simboli, anni, oggi, ultima=None):
         if rotto and rotto in simboli[0]:
             raise DatiNonDisponibili("giù")
         return {s: passeggiata(400 if anni > 1 else 250, seme=i, inizio="2025-01-01") for i, s in enumerate(simboli)}
@@ -41,6 +41,7 @@ def servizi(rotto=None):
         cervello=Cervello(),
         cambi=lambda dal, al: {},
         indici=lambda simbolo, dal: None,
+        adesso=lambda: datetime(2030, 1, 1, tzinfo=timezone.utc),
     )
 
 
@@ -102,3 +103,26 @@ def test_sera_compila_esiti(tmp_path):
     assert prev["salito"].all()
     assert leggi_oggi(tmp_path / "dati" / "oggi.json")["fatto_sera"] == "2026-10-19"
     assert "Statistiche" in (tmp_path / "sito" / "index.html").read_text(encoding="utf-8")
+
+
+def test_sera_durante_la_seduta_non_registra(tmp_path):
+    cfg = config_piccola()
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    s = servizi()
+    s.adesso = lambda: datetime(2026, 10, 19, 14, 0, tzinfo=timezone.utc)  # Milano aperta, NY aperta
+    esegui_sera(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), s)
+    assert leggi_previsioni(tmp_path / "dati" / "previsioni.csv")["salito"].isna().all()
+
+
+def test_mattina_chiede_ultima_seduta(tmp_path):
+    chieste = []
+    s = servizi()
+    originale = s.scarica_prezzi
+
+    def prezzi(simboli, anni, oggi, ultima=None):
+        chieste.append(ultima)
+        return originale(simboli, anni, oggi)
+
+    s.scarica_prezzi = prezzi
+    esegui_mattina(config_piccola(), tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), s)
+    assert date(2026, 10, 16) in chieste

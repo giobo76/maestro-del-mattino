@@ -49,3 +49,9 @@ def test_previsione_futura_non_toccata():
     prev = registra_esiti(previsioni(date(2026, 10, 16), date(2026, 10, 19)), prezzi, date(2026, 10, 16))
     assert chiesti == [date(2026, 10, 16)]
     assert prev["salito"].isna().sum() == 1
+
+
+def test_seduta_non_chiusa_resta_in_attesa():
+    prev = registra_esiti(previsioni(date(2026, 10, 16)), lambda s, g: {"ENI.MI": (10.0, 10.3)},
+                          date(2026, 10, 16), chiusa=lambda mercato, giorno: False)
+    assert prev["salito"].isna().all()

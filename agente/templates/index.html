@@ -60,12 +60,14 @@ a { color: var(--accento); }
 
 <section id="oggi">
 <h2>Oggi</h2>
+{% if data %}<p class="dettaglio">Analisi del {{ data }}</p>{% endif %}
+{% if analisi_vecchia %}<p class="nota">Oggi non c'è una nuova analisi (borsa chiusa o problema tecnico): qui sotto vedi quella del {{ data }}.</p>{% endif %}
 {% for s in schede %}
 <article class="carta">
   <div class="mercato">{{ s.nome_mercato }}{% if s.sotto_soglia %} <span class="studio">solo studio</span>{% endif %}</div>
   {% if s.simbolo %}
   <h3>{{ s.nome }} <small class="dettaglio">({{ s.simbolo }})</small></h3>
-  <p class="dettaglio">Chiusura di ieri: {{ s.prezzo_ieri | it_num }} {{ "€" if s.valuta == "EUR" else "$" }}</p>
+  <p class="dettaglio">Ultima chiusura: {{ s.prezzo_ieri | it_num }} {{ "€" if s.valuta == "EUR" else "$" }}</p>
   <p class="prob">{{ s.prob | it_pct }}</p>
   <p class="dettaglio">probabilità storica di salire tra apertura e chiusura, su {{ s.casi }} casi simili.
     Guadagno medio in questi casi: {{ s.rend_medio | it_pct(2, true) }}</p>
