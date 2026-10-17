@@ -45,6 +45,8 @@ th { color: var(--tenue); font-weight: 600; }
 .cifra b { display: block; font-size: 1.4rem; }
 .cifra span { color: var(--tenue); font-size: .85rem; }
 .studio { background: var(--avviso); color: var(--testo); border-radius: 999px; padding: 2px 8px; text-transform: none; letter-spacing: 0; font-size: .8rem; margin-left: 6px; }
+.piano td { white-space: normal; vertical-align: top; }
+.piano td:last-child { text-align: right; }
 .su { color: var(--su); } .giu { color: var(--giu); }
 footer { margin: 40px 0 24px; color: var(--tenue); font-size: .85rem; text-align: center; }
 a { color: var(--accento); }
@@ -74,13 +76,13 @@ a { color: var(--accento); }
     Stop pieno nel {{ s.pct_stop | it_pct(0) }} dei casi, +2R raggiunto nel {{ s.pct_2r | it_pct(0) }}.</p>
 
   <h4>Il piano</h4>
-  <div class="tabella"><table>
+  <table class="piano">
     <tr><td>Ingresso</td><td><b>al mercato, all'apertura</b></td></tr>
     <tr><td>Stop loss</td><td><b>{{ s.livelli.stop | it_prezzo(v) }}</b> ({{ ((s.livelli.stop / s.livelli.riferimento) - 1) | it_pct(1, true) }})</td></tr>
     <tr><td>Pareggio (+1R): sposta lo stop all'ingresso</td><td><b>{{ s.livelli.pareggio | it_prezzo(v) }}</b></td></tr>
     <tr><td>Prima uscita (+2R): vendi metà</td><td><b>{{ s.livelli.prima_uscita | it_prezzo(v) }}</b> ({{ ((s.livelli.prima_uscita / s.livelli.riferimento) - 1) | it_pct(1, true) }})</td></tr>
     <tr><td>Il resto</td><td>dopo una chiusura sotto la media a 20 giorni</td></tr>
-  </table></div>
+  </table>
   {% if s.quantita %}
   <p class="dettaglio">Con il tuo conto da 100 €: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
   {% elif s.quantita == 0 %}
