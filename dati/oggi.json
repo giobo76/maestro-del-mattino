@@ -1,23 +1,161 @@
 {
-  "data": "2026-10-17",
+  "data": "2026-10-19",
   "schede": [
     {
       "mercato": "ITA",
+      "simbolo": "CPR.MI",
+      "nome": "Campari",
+      "resa": 0.4463190470609771,
+      "casi": 455,
+      "pct_stop": 0.3956043956043956,
+      "pct_2r": 0.3516483516483517,
+      "situazione": "trend=su|rsi=alto|macd=nessuno|vol=normale|rottura=si|giorno=forte_su",
+      "livelli": {
+        "riferimento": 6.619999885559082,
+        "r": 0.2919457221978316,
+        "stop": 6.328054163361251,
+        "pareggio": 6.9119456077569135,
+        "prima_uscita": 7.203891329954745
+      },
+      "giudizio_notizie": "positivo",
+      "notizie": [
+        {
+          "titolo": "Il tuo giudizio su Chiffi - Atalantini.com",
+          "link": "https://news.google.com/rss/articles/CBMif0FVX3lxTFBhdEwtOUt6UzhWdmkxU0lUTTZvNFFJeUliTzhVZ1VJZ2k5NXAwSzA1dm44MlNsd1l1VXpZVzlUZnh0QU45UHhXb0RJWFhxM1lra2hpYXBfTDlNUXVhQ2stT0pRejEtaXN6QVd5Y0hQS1R0VHhPckJaeHEwdzBESjg?oc=5",
+          "fonte": "Atalantini.com",
+          "data": "2026-10-19 10:26:40+00:00"
+        },
+        {
+          "titolo": "Campari: Previsioni positive sulla crescita organica nel terzo trimestre. - Traderlink",
+          "link": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQdWJrSlNCTS1xYng4Vkx3bUVDX0VxeXRKZEVGeHd5VkhabFZvT0NyQ3RpenpGOFZIZWY4TU9NYUl0YXBDQ1Atc180RFljeVVVUC02YjI5YWxJLW5WdkR4SlhRQkdnSWc3X1R2cU9MUUtLaE95OWFKdlhCS2xVamNkYWU0S0JON21sLVhMVnl4VkctNWxmNVBheHVqYlprY19LeU1Xem9VRnBDMnA1QjhjRlhxN1owQ3huZC1vM1A3RWNlSDdVdjBwbzZ6QW5INGlYX1dJ?oc=5",
+          "fonte": "Traderlink",
+          "data": "2026-10-19 06:32:11+00:00"
+        },
+        {
+          "titolo": "Fujifilm: tumore colon-retto, con EndoRunner la prevenzione scende in piazza - Il Sole 24 ORE",
+          "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBPQnNxSUlTSENXQWltVDY3T0lLbEV4UmJfai10bVE0cFVFSXp5anhxSWtxWXVjQ29qSDU0WlRoRjk1WGduVmVpOHo5R0NHczRncmdNLVVvX3JKUUNuTUw2SkxsRjlHWlBaTEYzdmtB?oc=5",
+          "fonte": "Il Sole 24 ORE",
+          "data": "2026-10-18 15:52:31+00:00"
+        }
+      ],
+      "scartati": [],
+      "sotto_soglia": false,
+      "nota": "",
       "nome_mercato": "Borsa Italiana",
       "valuta": "EUR",
-      "nuova": false,
-      "simbolo": null,
-      "nota": "Borsa chiusa oggi."
+      "nuova": true,
+      "grafico": "dati/grafici/ITA.png",
+      "testi": {
+        "perche": "Il titolo Campari mostra una tendenza al rialzo con la rottura di una resistenza e una recente giornata fortemente positiva, supportata da previsioni favorevoli sulla crescita organica nel terzo trimestre. L'indicatore RSI è alto e segnala una decisa spinta dei compratori, accompagnata da volumi nella norma. Il piano operativo prevede di entrare all'apertura del mercato e di impostare subito uno stop loss protettivo a 6,33. Se il prezzo salirà a 6,91 sposteremo lo stop al prezzo d'ingresso per azzerare i pericoli, mentre a 7,20 venderemo metà della posizione. La quota restante verrà mantenuta finché il prezzo non chiuderà sotto la media mobile a 20 giorni.",
+        "rischio": "Il pericolo principale è che il titolo inverta rapidamente la rotta e colpisca lo stop pieno a 6,33, una situazione che in passato si è verificata nel 40% dei casi. Rispetto alla chiusura di riferimento di 6,62, l'uscita a questo livello comporta una perdita di circa il 4,38%.",
+        "parola": "stop loss",
+        "parola_spiegazione": "Lo stop loss è un ordine automatico che chiude una posizione in perdita non appena il prezzo scende a un livello prestabilito, evitando danni maggiori al capitale. Per esempio, inserendo lo stop loss a 6,33, il titolo viene venduto all'istante se scende a tale cifra, proteggendo il resto del denaro."
+      },
+      "quantita": 151,
+      "perdita_massima": 44.08380405187257,
+      "costo_r": 0.08506525425046002,
+      "posizione_id": "2026-10-16-ITA",
+      "capitale": 1000
     },
     {
       "mercato": "USA",
+      "simbolo": "AMAT",
+      "nome": "Applied Materials",
+      "resa": 0.4184522803053216,
+      "casi": 1023,
+      "pct_stop": 0.3391984359726295,
+      "pct_2r": 0.3724340175953079,
+      "situazione": "trend=giu|rsi=basso|macd=nessuno|vol=normale|rottura=no|giorno=forte_giu",
+      "livelli": {
+        "riferimento": 409.2900085449219,
+        "r": 41.843412398737115,
+        "stop": 367.4465961461848,
+        "pareggio": 451.13342094365896,
+        "prima_uscita": 492.9768333423961
+      },
+      "giudizio_notizie": "positivo",
+      "notizie": [
+        {
+          "titolo": "LITE, CRWV, NBIS, AMAT, SMCI Were Among Last Week’s Biggest AI-Linked Losers: Which Stocks Are Flashing Oversold Signals? - TradingView",
+          "link": "https://news.google.com/rss/articles/CBMihwJBVV95cUxNaGtneTIxcFZjS2ktZEU1NHkwSHRtY05GanFXcXJrU0hIZzJZSW1rR2tCbEJiSnN3QTFtREFDUm5vOGVrUEt0eHg1cVctZGRqQlRtTk5tVlgzeDRwdEhYUEhnUWVCQ2l6Rk54Y0dqbzFRaE5yUVJ6UElUcDV6ZEhGNGsxYUh5UDdvOVNRNDI1NlBGOV9CVmVCWU1tVVoxbXVLaGVZOGZqZFU1emp3T19aczZ5bm40R2hVdHAxaS05eGRZT0JwMDUwZ1VvRUx1S3ZEeWVOclRSRncwS2xvYlNVYTItOXF3djZZZGJ0WVgwYnFkU0hCcThuTlFIeDNRaGtqRjJYU01YTQ?oc=5",
+          "fonte": "TradingView",
+          "data": "2026-10-19 09:01:11+00:00"
+        },
+        {
+          "titolo": "LITE, CRWV, NBIS, AMAT, SMCI Were Among Last Week’s Biggest AI-Linked Losers: Which Stocks Are Flashing Oversold Signals?",
+          "link": "https://stocktwits.com/news-articles/markets/equity/lite-crwv-nbis-amat-smci-were-among-last-week-s-biggest-ai-linked-losers-which-stocks-are-flashing-oversold-signals/cZx8SPgRBMW?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-19 09:01:11+00:00"
+        },
+        {
+          "titolo": "Applied Materials reports record revenue. Applied Materials stock gains 1.60 percent - ad-hoc-news.de",
+          "link": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNS1R3aGN0dkNhOTVCUDJmVlJ3SkZyWVJIbWlpbk1nbVYyRGRCRFJvVGRHU3BRbFRza2RmUDlPRzBYY3VvVjlLSzB2em9paV9OWWo5b1NDRUxsc1BSU245T3R1MmxKLWZSTEd5WjhDMmNpWnZ0NzZSX0VRUVBFYkU2X1U3QzZIcTBjMWdLcnRUcW1DV3Nsc0VxSUoxQnBQQmFwN0NlSm1MVXk2eEJWalVqd2toelBOY0lxT2Izb2pQeG1ITFNhVmtUSVc2dzJ5UQ?oc=5",
+          "fonte": "ad-hoc-news.de",
+          "data": "2026-10-19 07:46:23+00:00"
+        },
+        {
+          "titolo": "Applied Materials stock: semiconductor equipment group rises 1.52 percent pre-market - ad-hoc-news.de",
+          "link": "https://news.google.com/rss/articles/CBMiygFBVV95cUxOYVlzSzAteHZmbDRsLXlTX3Y5NDg3SW9YdURTMHl2bVNVbXJqbUcteWJEM0hfSkVDNlFNN3Y3a2xXcU4zN2g4MTYzV2pFbjhJd0szN2xBY205VzBzblB2eGJkY3czQkhreU9kMFAyM1Qzd3ZEb2pHRFY1QUtjcVpHNEp4SWZ0S0cyN0UyOGthc1d3QjRHQnkxTHhxeGxOSEh6cWdHc1JINlFIcGxSZDFnN1BHYnM1bUJ0OGxVXzJhRWFISWNFLVVFc1d3?oc=5",
+          "fonte": "ad-hoc-news.de",
+          "data": "2026-10-19 06:15:34+00:00"
+        },
+        {
+          "titolo": "Global Semiconductor Equipment Giants: Competitive Landscape & Innovations in Advanced Packaging Technology - 36Kr",
+          "link": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE56MGMxM2FiOU1YWThUYWYya1ZWZUlTTzVOWTdSaHZQTkdMS0RoaGFYWkROOXhOVnZZbzFjUjhveWZROVZ4N3A1SEN5NG5LeThhdG40?oc=5",
+          "fonte": "36Kr",
+          "data": "2026-10-19 04:32:41+00:00"
+        },
+        {
+          "titolo": "Front-End Equipment Giants Move Into Advanced Packaging, Besi Loses 13% of Market Value in Two Days - BigGo Finance",
+          "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5iR3k4cG5reEgwb3hHU2M0TTE3Y0V2bmxvdFBiVUtGbnlpZmNJcTJkck9tZ3lJWEl3amp0aHk0dkprblJtUlhUQTdfSGlyQjBfOV9QU1haR3pPcXVXN09VUmpEQjdZYk1USndnVEtZZDlyaXh0dlE?oc=5",
+          "fonte": "BigGo Finance",
+          "data": "2026-10-19 03:25:00+00:00"
+        },
+        {
+          "titolo": "Applied Materials targets 40 percent margin. Its stock trades 1.88 percent below its Xetra close - ad-hoc-news.de",
+          "link": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxNTEpfRGtOd1lTVlhKRS15N0Y4R000dVZZS3Q1amZ1VHRpbDFmbGNQSnZvSGZFNlBfZWVWMkVZNUtkaHczVzNUZmhGMi0xU3V2UW50NUZoWVN2T0pWQ1Bfa2drcnhvUE1va0ZHbVVZWlkyX1M0QkVRSGFScTR4N2w4ZlloeDU2Xy1WX2MtalhwQ2R0bkh5YlJtenZpOGZ4d2QwazBmV0h1WUNPd0NQaTFqZ1VvRnY5NmczeW41bjIwbW52NGY0R05UTWY4ZGRoM2JUc1ExcEp6dERRNFZiQUFvME1reE5iNTE1YndwWmlJdw?oc=5",
+          "fonte": "ad-hoc-news.de",
+          "data": "2026-10-18 15:56:50+00:00"
+        },
+        {
+          "titolo": "What Is Applied Materials’ (AMAT) Economic Moat, and Is It Widening or Narrowing?",
+          "link": "https://finance.yahoo.com/markets/stocks/articles/applied-materials-amat-economic-moat-143123014.html?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-18 14:31:23+00:00"
+        },
+        {
+          "titolo": "What Is Applied Materials’ (AMAT) Economic Moat, and Is It Widening or Narrowing? - Insider Monkey",
+          "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxNMkFETlJjSndJclQzOC1aLWJBZ3dkeFlMQnY0Rm45eEo5UmlwZE02YmNxTHNnUkY5bXhCTFNmVlBCZkQ4bUVfMVVFVUNoVzNQUk43M19zT1FkY3R6aEtkSktjaTFWc2toc2wwc3hFZVo0d28yMHBUWFpvZjJkT1BiSXcya3U5Um1HYzNPNDNTQXB0dU1HSlk4c1lNZ0x4VlZWangwUHRyVXM4NzRZa1lQRlUwNTZlMkZ2em5vWNIBxAFBVV95cUxQdWJ6ZDFqdklOT3lCdFJCTVVkWjhjVmlOWUFZZWdDVUFEdl92YmhfRXdiRnp0b3VkUkJkOGI1eDNiSi03Q2Q3S3NSVFhNQzZXQzRaMmJKRmdVLU5QcmpDdDZqRW00dl9EaVZnSmU3d1pCS0s4YlhQY21ONlVsdkRqTDhlQV9iT1pxazBvcWFYNUthdlVvU25ZblA1TEpLNGdUcnkwUHVIRkhzY0RUVXV6dDMyeDBDbHh4RFZMcThqYmotVHVS?oc=5",
+          "fonte": "Insider Monkey",
+          "data": "2026-10-18 14:31:15+00:00"
+        },
+        {
+          "titolo": "Chip toolmakers can’t catch a break, even as TSMC spends more",
+          "link": "https://www.thestreet.com/technology/tsmc-spending-surge-equipment-suppliers-drop?.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-18 14:17:00+00:00"
+        }
+      ],
+      "scartati": [],
+      "sotto_soglia": false,
+      "nota": "",
       "nome_mercato": "Stati Uniti",
       "valuta": "USD",
-      "nuova": false,
-      "simbolo": null,
-      "nota": "Borsa chiusa oggi."
+      "nuova": true,
+      "grafico": "dati/grafici/USA.png",
+      "testi": {
+        "perche": "Il titolo Applied Materials mostra un trend al ribasso e un valore RSI basso dopo una giornata di forte discesa, indicando un titolo molto venduto. Sul fronte delle notizie, nonostante le recenti vendite nel settore dei semiconduttori, l'azienda ha evidenziato ricavi record e margini solidi. Il piano operativo prevede un ingresso all'apertura del mercato, con lo spostamento dello stop al prezzo d'ingresso appena le quotazioni raggiungono 451,13 (+1R). Al livello di 492,98 (+2R) si vende metà della posizione per proteggere il capitale accumulato. La parte restante dell'operazione viene infine mantenuta finché il prezzo non chiude sotto la media mobile a 20 giorni.",
+        "rischio": "Il rischio principale è che il prezzo continui a scendere fino a toccare lo stop loss a 367,45, con una perdita di circa il 10,22% rispetto alla chiusura di 409,29. Nelle 1023 operazioni passate con configurazioni simili, questo stop pieno si è verificato nel 34% dei casi.",
+        "parola": "media mobile",
+        "parola_spiegazione": "La media mobile è uno strumento che calcola il prezzo medio di un'azione lungo un certo arco di tempo per smussare le oscillazioni improvvise. Ad esempio, una media mobile a 20 giorni somma i prezzi di chiusura degli ultimi venti giorni e li divide per venti, mostrando una linea guida sul grafico. Se il prezzo scende sotto questa linea, segnala agli investitori che la spinta rialzista recente si sta esaurendo."
+      },
+      "quantita": 2.7415,
+      "perdita_massima": 102.23286236273898,
+      "costo_r": 0.01502217545011951,
+      "posizione_id": "2026-10-16-USA",
+      "capitale": 1000
     }
   ],
-  "fatto_mattina": "2026-10-17",
+  "fatto_mattina": "2026-10-19",
   "fatto_sera": null
 }
