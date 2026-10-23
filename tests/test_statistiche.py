@@ -79,3 +79,13 @@ def test_quantita():
     assert quantita("ITA", 100, 6.62, 1.1) == 15
     assert quantita("ITA", 100, 400, 1.1) == 0
     assert quantita("USA", 100, 200, 1.1) == pytest.approx(0.55)
+
+
+def test_conto_ibkr_esclude_le_non_eseguite():
+    fatta, saltata = op(COMPLETA), op(STOP, inizio="2026-10-10")
+    saltata.eseguita = False
+    stat = calcola_statistiche([fatta, saltata], CFG, {}, {})
+    assert stat["consigli"]["chiuse"] == 2          # il metodo conta tutte le operazioni
+    solo_fatta = calcola_statistiche([fatta], CFG, {}, {})
+    assert stat["conto_ibkr"]["finale_lordo"] == pytest.approx(solo_fatta["conto_ibkr"]["finale_lordo"])
+    assert stat["conto_simulato"]["finale_lordo"] != pytest.approx(solo_fatta["conto_simulato"]["finale_lordo"])

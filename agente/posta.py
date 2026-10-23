@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 
 MITTENTE = "Maestro del mattino <onboarding@resend.dev>"
 URL_RESEND = "https://api.resend.com/emails"
+URL_SEGNA = "https://github.com/giobo76/maestro-del-mattino/actions/workflows/agente.yml"
 
 
 def invia(oggetto: str, html: str, destinatario: str, chiave: str | None,
@@ -68,6 +69,9 @@ def email_mattina(schede: list[dict], url_pagina: str) -> tuple[str, str] | None
                           f"<td style='padding:4px 8px'><b>{html_lib.escape(b)}</b></td></tr>" for a, b in righe)
         blocchi.append(f"<h3>{html_lib.escape(s['nome'])} ({html_lib.escape(s['simbolo'])})</h3>{studio}"
                        f"<table style='border-collapse:collapse'>{tabella}</table>")
+    blocchi.append(f'<p style="font-size:13px">Non esegui un ordine? <a href="{URL_SEGNA}">Segnalo qui</a>: '
+                   "Run workflow → comando <b>segna</b>, scegli il mercato ed eseguita <b>no</b>. "
+                   "L'agente la seguirà solo su carta e il giorno dopo potrà proporne una nuova.</p>")
     oggetto = "📈 Nuova operazione: " + ", ".join(s["nome"] for s in nuove)
     return oggetto, _pagina("".join(blocchi), url_pagina)
 

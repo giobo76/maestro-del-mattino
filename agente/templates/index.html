@@ -129,7 +129,7 @@ a { color: var(--accento); }
 <div class="carta tabella">
 <table>
   <thead><tr><th>Titolo</th><th>Stato</th><th>Ingresso</th><th>Stop</th><th>Ultimo</th><th>Risultato</th></tr></thead>
-  <tbody>{% for p in posizioni %}<tr><td>{{ p.nome }}{% if p.studio %} (studio){% endif %}</td><td>{{ p.stato }}</td><td>{{ p.ingresso }}</td><td>{{ p.stop }}</td><td>{{ p.ultimo }}</td><td>{{ p.r_attuale }}</td></tr>{% endfor %}</tbody>
+  <tbody>{% for p in posizioni %}<tr><td>{{ p.nome }}{% if p.studio %} (studio){% endif %}{% if p.carta %} (su carta){% endif %}</td><td>{{ p.stato }}</td><td>{{ p.ingresso }}</td><td>{{ p.stop }}</td><td>{{ p.ultimo }}</td><td>{{ p.r_attuale }}</td></tr>{% endfor %}</tbody>
 </table>
 </div>
 {% else %}<p class="carta">Nessuna posizione aperta.</p>{% endif %}
@@ -141,7 +141,7 @@ a { color: var(--accento); }
 <div class="carta tabella">
 <table>
   <thead><tr><th>Ingresso</th><th>Titolo</th><th>Prezzo ingresso</th><th>Ultima uscita</th><th>Risultato</th><th>Motivo</th></tr></thead>
-  <tbody>{% for r in storico %}<tr><td>{{ r.data }}</td><td>{{ r.nome }}{% if r.studio %} (studio){% endif %}</td><td>{{ r.ingresso }}</td><td>{{ r.uscita }}</td><td>{{ r.risultato }}</td><td>{{ r.motivo }}</td></tr>{% endfor %}</tbody>
+  <tbody>{% for r in storico %}<tr><td>{{ r.data }}</td><td>{{ r.nome }}{% if r.studio %} (studio){% endif %}{% if r.carta %} (su carta){% endif %}</td><td>{{ r.ingresso }}</td><td>{{ r.uscita }}</td><td>{{ r.risultato }}</td><td>{{ r.motivo }}</td></tr>{% endfor %}</tbody>
 </table>
 </div>
 {% else %}<p class="carta">Ancora nessuna operazione chiusa.</p>{% endif %}
@@ -168,7 +168,7 @@ a { color: var(--accento); }
 <div class="carta" style="margin-top:16px">
   <h4>Conto simulato da {{ stat.conto_simulato.iniziale | it_num(0) }} €</h4>
   <p>Seguendo tutti i consigli veri, commissioni comprese, avresti <b>{{ stat.conto_simulato.finale_netto | it_num }} €</b> dopo le tasse.</p>
-  <h4>Il tuo conto IBKR da {{ stat.conto_ibkr.iniziale | it_num(0) }} €</h4>
+  <h4>Il tuo conto IBKR da {{ stat.conto_ibkr.iniziale | it_num(0) }} € <small>(solo gli ordini eseguiti)</small></h4>
   <p>Con commissioni IBKR (ingresso più una o due uscite), cambio e tasse avresti <b>{{ stat.conto_ibkr.finale_netto | it_num }} €</b>.</p>
   <p class="dettaglio">Attenzione: con un conto piccolo le commissioni minime italiane (1,25 € a ordine, fino a 3 ordini) possono valere quasi 1R.</p>
   {% if stat.indici %}

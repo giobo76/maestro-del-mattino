@@ -30,13 +30,13 @@ def _chiuse(ops: list[Operazione]) -> list[Operazione]:
 
 
 def simula_conto(ops: list[Operazione], capitale: dict[str, float], costi: dict,
-                 cambi: dict[date, float], tasse_pct: float) -> dict:
+                 cambi: dict[date, float], tasse_pct: float, solo_eseguite: bool = False) -> dict:
     """Reinveste tutto il capitale del mercato in ogni operazione vera (non "solo studio")."""
     valori = dict(capitale)
     iniziale = sum(capitale.values())
     andamento = []
     for op in _chiuse(ops):
-        if op.sotto_soglia or op.mercato not in valori:
+        if op.sotto_soglia or op.mercato not in valori or (solo_eseguite and op.eseguita is False):
             continue
         valore = valori[op.mercato]
         cambio = _cambio(cambi, date.fromisoformat(op.data_ingresso))
@@ -92,7 +92,7 @@ def calcola_statistiche(ops: list[Operazione], cfg: Config, cambi: dict[date, fl
                                           cfg.costi["tasse_pct"])
     quota_ibkr = cfg.ibkr_capitale_eur / len(cfg.ibkr_mercati)
     stat["conto_ibkr"] = simula_conto(ops, {m: quota_ibkr for m in cfg.ibkr_mercati}, cfg.costi, cambi,
-                                      cfg.costi["tasse_pct"])
+                                      cfg.costi["tasse_pct"], solo_eseguite=True)
     stat["indici"] = {}
     for m, serie in indici.items():
         del_mercato = [o for o in chiuse if o.mercato == m and not o.sotto_soglia]

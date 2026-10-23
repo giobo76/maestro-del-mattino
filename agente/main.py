@@ -1,4 +1,4 @@
-"""Comandi dell'agente: mattina, sera, tabella."""
+"""Comandi dell'agente: mattina, sera, tabella, segna."""
 import argparse
 import dataclasses
 import json
@@ -19,6 +19,7 @@ from agente.dati import DatiNonDisponibili
 from agente.operazione import Operazione
 from agente.operazioni import (
     aggiorna_operazioni, aperta_nel_mercato, leggi_operazioni, nuova_operazione, salva_operazioni,
+    segna_eseguita,
 )
 from agente.pagina import disegna_grafico, genera_sito
 from agente.posta import email_mattina, email_sera, invia
@@ -73,7 +74,7 @@ def servizi_reali(cfg: Config) -> Servizi:
 
 
 def deve_partire(comando: str, adesso: datetime, oggi_json: dict | None) -> bool:
-    if comando == "tabella":
+    if comando in ("tabella", "segna"):
         return True
     locale = adesso.astimezone(ROMA)
     fatto = (oggi_json or {}).get(f"fatto_{comando}")
@@ -145,7 +146,8 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
     for codice, mercato in cfg.mercati.items():
         base = {"mercato": codice, "nome_mercato": mercato.nome, "valuta": mercato.valuta, "nuova": False}
         aperta = aperta_nel_mercato(ops, codice, solo_vere=True)
-        studio_aperta = aperta_nel_mercato(ops, codice)
+        studio_aperta = next((op for op in ops if op.mercato == codice and op.stato != "chiusa"
+                              and op.sotto_soglia), None)
         if aperta is not None:
             schede.append({**base, "simbolo": None, "posizione_id": aperta.id,
                            "nota": f"Posizione già aperta su {aperta.nome} ({STATI_LEGGIBILI[aperta.stato]}): "
@@ -234,6 +236,17 @@ def esegui_sera(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: dat
         servizi.invia(*email)
 
 
+def esegui_segna(cfg: Config, cartella_dati: Path, cartella_sito: Path, chi: str, eseguita: bool,
+                 servizi: Servizi) -> None:
+    """Registra se l'ordine proposto è stato eseguito davvero su IBKR."""
+    ops = leggi_operazioni(cartella_dati / "operazioni.csv")
+    op = segna_eseguita(ops, chi, eseguita)
+    log.info("%s (%s) segnata come %s", op.nome, op.id, "eseguita" if eseguita else "non eseguita")
+    salva_operazioni(ops, cartella_dati / "operazioni.csv")
+    oggi_json = leggi_oggi(cartella_dati / "oggi.json") or {"data": date.today().isoformat(), "schede": []}
+    _pubblica(cfg, cartella_dati, cartella_sito, ops, oggi_json, servizi)
+
+
 def _scrivi_output(nessun_lavoro: bool) -> None:
     percorso = os.environ.get("GITHUB_OUTPUT")
     if percorso:
@@ -243,12 +256,16 @@ def _scrivi_output(nessun_lavoro: bool) -> None:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="python -m agente")
-    parser.add_argument("comando", choices=["mattina", "sera", "tabella"])
+    parser.add_argument("comando", choices=["mattina", "sera", "tabella", "segna"])
+    parser.add_argument("--operazione", help="segna: mercato (ITA/USA, la più recente) o id dell'operazione")
+    parser.add_argument("--eseguita", choices=["si", "no"], help="segna: hai eseguito l'ordine su IBKR?")
     parser.add_argument("--forza", action="store_true", help="ignora l'orario e i lavori già fatti")
     parser.add_argument("--giorno", type=date.fromisoformat, help="data da usare (prove), AAAA-MM-GG")
     parser.add_argument("--dati", type=Path, default=Path("dati"))
     parser.add_argument("--sito", type=Path, default=Path("sito"))
     argomenti = parser.parse_args(argv)
+    if argomenti.comando == "segna" and not (argomenti.operazione and argomenti.eseguita):
+        parser.error("segna richiede --operazione e --eseguita")
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
     adesso = adesso_roma()
@@ -265,6 +282,9 @@ def main(argv: list[str]) -> int:
         oggi_json = leggi_oggi(argomenti.dati / "oggi.json") or {"data": oggi.isoformat(), "schede": []}
         _pubblica(cfg, argomenti.dati, argomenti.sito, leggi_operazioni(argomenti.dati / "operazioni.csv"),
                   oggi_json, servizi)
+    elif argomenti.comando == "segna":
+        esegui_segna(cfg, argomenti.dati, argomenti.sito, argomenti.operazione, argomenti.eseguita == "si",
+                     servizi)
     elif argomenti.comando == "mattina":
         esegui_mattina(cfg, argomenti.dati, argomenti.sito, oggi, servizi)
     else:

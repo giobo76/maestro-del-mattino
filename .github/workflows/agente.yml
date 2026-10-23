@@ -12,12 +12,22 @@ on:
       comando:
         description: "Cosa eseguire"
         type: choice
-        options: [mattina, sera, tabella]
+        options: [mattina, sera, tabella, segna]
         default: mattina
       forza:
         description: "Esegui anche fuori orario o se già fatto oggi"
         type: boolean
         default: true
+      operazione:
+        description: "Solo per segna: mercato dell'ultima operazione proposta"
+        type: choice
+        options: [ITA, USA]
+        default: ITA
+      eseguita:
+        description: "Solo per segna: hai eseguito l'ordine su IBKR?"
+        type: choice
+        options: ["no", "si"]
+        default: "no"
 
 permissions:
   contents: write
@@ -50,6 +60,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             comando="${{ inputs.comando }}"
             [ "${{ inputs.forza }}" = "true" ] && extra="--forza"
+            [ "$comando" = "segna" ] && extra="--operazione ${{ inputs.operazione }} --eseguita ${{ inputs.eseguita }}"
           else
             case "${{ github.event.schedule }}" in
               "30 5 * * 1-5"|"30 6 * * 1-5") comando=mattina ;;

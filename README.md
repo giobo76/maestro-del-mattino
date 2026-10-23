@@ -25,6 +25,16 @@ Ogni sera (ore 22:30) segue le operazioni aperte e manda un'email quando c'è qu
 
 IBKR gestisce i punti 2–4 da solo sui suoi server, anche a telefono spento.
 
+## Se non esegui un ordine
+L'agente non legge il conto IBKR: se non segnali niente, considera eseguita ogni operazione proposta.
+Se non l'hai eseguita: su GitHub, scheda **Actions** → "Maestro del mattino" → **Run workflow**,
+comando `segna`, scegli il mercato (ITA/USA) ed eseguita `no`. Il link è anche nell'email del mattino.
+
+- l'operazione resta seguita **su carta**: conta nelle statistiche del metodo, ma non nel conto IBKR
+- non blocca più il mercato: la mattina dopo può arrivare una proposta nuova
+- le email serali su di lei iniziano con "📝 Su carta"
+- per correggere, rilancia `segna` con eseguita `si`
+
 ## Come leggere la pagina
 - **Oggi**: la nuova operazione con il piano, oppure lo stato della posizione già aperta
 - **Posizioni aperte** e **Storico**: risultati in R

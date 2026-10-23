@@ -6,6 +6,7 @@ import pytest
 from agente.operazione import Livelli
 from agente.operazioni import (
     aggiorna_operazioni, aperta_nel_mercato, leggi_operazioni, nuova_operazione, salva_operazioni,
+    segna_eseguita,
 )
 from agente.scelta import Scelta
 
@@ -107,3 +108,39 @@ def test_split_riscala_i_livelli():
     op = ops[0]
     assert op.stato == "aperta" and op.stop_iniziale == pytest.approx(9.6) and op.ingresso == pytest.approx(10)
     assert [m.evento for m in messaggi] == ["riscalato"]
+
+
+def test_operazione_non_eseguita_non_blocca_il_mercato():
+    op = nuova_operazione(scelta(), date(2026, 10, 16))
+    op.eseguita = False
+    assert aperta_nel_mercato([op], "ITA") is op
+    assert aperta_nel_mercato([op], "ITA", solo_vere=True) is None
+
+
+def test_segna_ultima_del_mercato_o_per_id():
+    vecchia = nuova_operazione(scelta(), date(2026, 10, 9))
+    nuova = nuova_operazione(scelta(), date(2026, 10, 16))
+    ops = [vecchia, nuova]
+    assert segna_eseguita(ops, "ITA", False) is nuova and nuova.eseguita is False and vecchia.eseguita is None
+    assert segna_eseguita(ops, "2026-10-09-ITA", True) is vecchia and vecchia.eseguita is True
+    with pytest.raises(ValueError):
+        segna_eseguita(ops, "USA", True)
+
+
+def test_csv_vecchio_senza_colonna_eseguita(tmp_path):
+    op = nuova_operazione(scelta(), date(2026, 10, 19))
+    salva_operazioni([op], tmp_path / "operazioni.csv")
+    tabella = pd.read_csv(tmp_path / "operazioni.csv").drop(columns="eseguita")
+    tabella.to_csv(tmp_path / "operazioni.csv", index=False)
+    [letta] = leggi_operazioni(tmp_path / "operazioni.csv")
+    assert letta.eseguita is None
+    letta.eseguita = False
+    salva_operazioni([letta], tmp_path / "operazioni.csv")
+    assert leggi_operazioni(tmp_path / "operazioni.csv")[0].eseguita is False
+
+
+def test_messaggi_su_carta():
+    op = nuova_operazione(scelta(), date(2026, 10, 16))
+    op.eseguita = False
+    [m] = aggiorna_operazioni([op], barre_da([("2026-10-19", 100, 101, 99, 100)]), date(2026, 10, 19), SEMPRE)
+    assert m.testo.startswith("📝 Su carta") and "Campari" in m.testo

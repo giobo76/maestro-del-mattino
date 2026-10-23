@@ -8,7 +8,7 @@ import pytest
 from agente.archivio import leggi_oggi
 from agente.config import carica_config
 from agente.dati import DatiNonDisponibili
-from agente.main import Servizi, deve_partire, esegui_mattina, esegui_sera
+from agente.main import Servizi, deve_partire, esegui_mattina, esegui_segna, esegui_sera
 from agente.operazioni import leggi_operazioni
 from tests.aiuti import passeggiata
 
@@ -212,3 +212,27 @@ def test_studio_non_blocca_operazione_vera(tmp_path):
     esegui_mattina(dataclasses.replace(cfg, soglia_r=100.0), tmp_path / "dati2", tmp_path / "sito2",
                    date(2026, 10, 20), servizi())
     assert len(leggi_operazioni(tmp_path / "dati2" / "operazioni.csv")) == 2
+
+
+def test_segna_non_eseguita_libera_il_mercato(tmp_path):
+    cfg = config_piccola()
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    esegui_segna(cfg, tmp_path / "dati", tmp_path / "sito", "ITA", False, servizi())
+    ops = {o.mercato: o for o in leggi_operazioni(tmp_path / "dati" / "operazioni.csv")}
+    assert ops["ITA"].eseguita is False and ops["USA"].eseguita is None
+    assert "su carta" in (tmp_path / "sito" / "index.html").read_text(encoding="utf-8")
+    s = servizi()
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 20), s)
+    ops = leggi_operazioni(tmp_path / "dati" / "operazioni.csv")
+    assert sorted(o.mercato for o in ops) == ["ITA", "ITA", "USA"]  # nuova proposta solo in Italia
+    [(oggetto, html)] = s.invia.inviate
+    assert "segna" in html
+
+
+def test_segna_operazione_inesistente(tmp_path):
+    with pytest.raises(ValueError):
+        esegui_segna(config_piccola(), tmp_path / "dati", tmp_path / "sito", "USA", False, servizi())
+
+
+def test_deve_partire_segna():
+    assert deve_partire("segna", ora("2026-07-15T03:00"), {"fatto_mattina": "2026-07-15"})

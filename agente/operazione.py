@@ -48,6 +48,7 @@ class Operazione:
     motivo: str | None = None
     giorni_senza_dati: int = 0
     data_avviso: str | None = None
+    eseguita: bool | None = None  # None = non confermata (si considera eseguita)
 
 
 def livelli_da(riferimento: float, atr: float, atr_mult: float) -> Livelli | None:

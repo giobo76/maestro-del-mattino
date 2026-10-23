@@ -43,7 +43,8 @@ def leggi_operazioni(percorso) -> list[Operazione]:
     if not Path(percorso).exists():
         return []
     tabella = pd.read_csv(percorso, dtype=str, keep_default_na=False, na_values=[""])
-    return [Operazione(**{c: _valore(c, riga[c]) for c in CAMPI}) for _, riga in tabella.iterrows()]
+    # le colonne aggiunte dopo (es. eseguita) mancano nei file vecchi
+    return [Operazione(**{c: _valore(c, riga.get(c)) for c in CAMPI}) for _, riga in tabella.iterrows()]
 
 
 def salva_operazioni(ops: list[Operazione], percorso) -> None:
@@ -63,7 +64,17 @@ def nuova_operazione(scelta: Scelta, giorno: date) -> Operazione:
 
 def aperta_nel_mercato(ops: list[Operazione], mercato: str, solo_vere: bool = False) -> Operazione | None:
     return next((op for op in ops if op.mercato == mercato and op.stato != "chiusa"
-                 and not (solo_vere and op.sotto_soglia)), None)
+                 and not (solo_vere and (op.sotto_soglia or op.eseguita is False))), None)
+
+
+def segna_eseguita(ops: list[Operazione], chi: str, eseguita: bool) -> Operazione:
+    """chi: id dell'operazione oppure mercato (ITA/USA), che indica la sua operazione più recente."""
+    trovate = [op for op in ops if chi in (op.id, op.mercato)]
+    if not trovate:
+        raise ValueError(f"Nessuna operazione per '{chi}'")
+    op = max(trovate, key=lambda o: o.data_segnale)
+    op.eseguita = eseguita
+    return op
 
 
 PREZZI = ["riferimento", "r", "stop_iniziale", "pareggio", "prima_uscita", "ingresso", "stop", "prezzo_meta",
@@ -94,6 +105,11 @@ def _r(valore: float) -> str:
 
 
 def testo_evento(op: Operazione, evento: str) -> str:
+    testo = _testo_evento(op, evento)
+    return f"📝 Su carta (non eseguita): {testo}" if op.eseguita is False else testo
+
+
+def _testo_evento(op: Operazione, evento: str) -> str:
     n = op.nome
     if evento == "ingresso":
         return f"▶️ {n}: operazione partita all'apertura a {_prezzo(op, op.ingresso)}."

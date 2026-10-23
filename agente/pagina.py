@@ -109,7 +109,7 @@ def _posizione(op: Operazione) -> dict:
     return {"id": op.id, "nome": op.nome, "mercato": op.mercato, "stato": STATI[op.stato],
             "ingresso": it_prezzo(op.ingresso, valuta), "stop": it_prezzo(op.stop or op.stop_iniziale, valuta),
             "ultimo": it_prezzo(op.ultimo_prezzo, valuta), "r_attuale": it_r(attuale),
-            "studio": op.sotto_soglia}
+            "studio": op.sotto_soglia, "carta": op.eseguita is False}
 
 
 def _storico(ops: list[Operazione]) -> list[dict]:
@@ -120,7 +120,8 @@ def _storico(ops: list[Operazione]) -> list[dict]:
         segno = "✅" if r > 0.05 else ("❌" if r < -0.05 else "➖")
         righe.append({"data": _data_it(op.data_ingresso), "nome": op.nome, "mercato": op.mercato,
                       "ingresso": it_prezzo(op.ingresso, valuta), "uscita": it_prezzo(op.prezzo_uscita, valuta),
-                      "risultato": f"{segno} {it_r(r)}", "motivo": op.motivo, "studio": op.sotto_soglia})
+                      "risultato": f"{segno} {it_r(r)}", "motivo": op.motivo, "studio": op.sotto_soglia,
+                      "carta": op.eseguita is False})
     return righe
 
 
