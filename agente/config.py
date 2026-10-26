@@ -1,4 +1,5 @@
 """Lettura delle impostazioni da config.yaml."""
+import os
 from dataclasses import dataclass
 
 import yaml
@@ -39,4 +40,6 @@ def carica_config(percorso: str = "config.yaml") -> Config:
         codice: Mercato(codice=codice, **valori)
         for codice, valori in dati.pop("mercati").items()
     }
+    # l'indirizzo sta nel Secret EMAIL_DESTINATARIO, non nel repo pubblico
+    dati["email_destinatario"] = os.environ.get("EMAIL_DESTINATARIO", "")
     return Config(mercati=mercati, **dati)

@@ -19,7 +19,7 @@ prezzo d'ingresso, stop loss, livello di pareggio, livello di prima uscita e reg
 - Solo la variante a +2R (niente confronto con +1R)
 - Ordini gestiti da IBKR (bracket e stop regolabile). Nessun bot che compra o vende
 - L'agente **segue le operazioni che propone** (non legge il conto IBKR)
-- Avvisi per **email**, tramite il suo account Resend, all'indirizzo bonolinigiovanni@gmail.com
+- Avvisi per **email**, tramite il suo account Resend, all'indirizzo di Giovanni (Secret `EMAIL_DESTINATARIO`)
 
 ### Cosa ho deciso io (da confermare)
 - Una posizione aperta alla volta per mercato

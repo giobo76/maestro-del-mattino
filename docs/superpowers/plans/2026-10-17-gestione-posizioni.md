@@ -18,7 +18,7 @@
 - Stop = `C − atr_mult × ATR14`, `atr_mult: 2.0`; soglia resa `soglia_r: 0.10`; casi minimi 30; casi virtuali 30
 - Modalità studio invariata: sotto soglia l'operazione esce con l'etichetta ed è seguita, ma esclusa dai conti simulati
 - Una posizione non chiusa alla volta per mercato
-- Chiave Resend solo da `RESEND_API_KEY`; destinatario in `config.yaml` (`email_destinatario: bonolinigiovanni@gmail.com`), mittente `Maestro del mattino <onboarding@resend.dev>`
+- Chiave Resend solo da `RESEND_API_KEY`; destinatario dal Secret `EMAIL_DESTINATARIO`, mittente `Maestro del mattino <onboarding@resend.dev>`
 - I test non usano internet
 - Footer invariato: "Strumento personale a scopo didattico. Non è una consulenza finanziaria."
 
