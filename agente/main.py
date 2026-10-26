@@ -184,15 +184,15 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             disegna_grafico(prezzi[scelta.simbolo], scelta.nome, grafico, lv)
             cambio = 1.0 if codice == "ITA" else _cambio_attuale(servizi, oggi)
             n = perdita = costo_r = None
+            capitale = cfg.ibkr_capitale_eur / max(len(cfg.ibkr_mercati), 1)  # il conto si divide tra i mercati
             if codice in cfg.ibkr_mercati:
                 if cambio is None:
                     scelta.nota = (scelta.nota + " Cambio euro/dollaro non disponibile: quantità calcolata "
                                    "con 1 € = 1 $, verificala su IBKR.").strip()
                     cambio = 1.0
-                n = quantita(codice, cfg.ibkr_capitale_eur, lv.riferimento, cambio)
+                n = quantita(codice, capitale, lv.riferimento, cambio)
                 perdita = n * lv.r / cambio
                 if perdita:
-                    capitale = cfg.ibkr_capitale_eur
                     costi = (costo_ordine(codice, capitale, lv.riferimento, cfg.costi, cambio)
                              + 2 * costo_ordine(codice, capitale / 2, lv.riferimento, cfg.costi, cambio))
                     costo_r = costi / perdita
@@ -206,7 +206,7 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
             op = nuova_operazione(scelta, seduta_precedente(mercato.calendario, oggi))
             ops.append(op)
             scheda.update(nuova=True, grafico=str(grafico), testi=testi, quantita=n, perdita_massima=perdita,
-                          costo_r=costo_r, posizione_id=op.id, nota=scelta.nota, capitale=cfg.ibkr_capitale_eur)
+                          costo_r=costo_r, posizione_id=op.id, nota=scelta.nota, capitale=capitale)
         log.info("%s: scelto %s (%s)", codice, scelta.simbolo, scelta.nota or "ok")
         schede.append(scheda)
 

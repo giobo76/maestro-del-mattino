@@ -105,7 +105,7 @@ def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None)
                  ("Prima uscita (+2R): vendi metà", _prezzo(lv["prima_uscita"], v)),
                  ("Il resto", "vendi dopo una chiusura sotto la media a 20 giorni (ti avviso io)")]
         if quantita:
-            righe.append((f"Quantità (conto da {capitale} €)", f"{quantita:g}".replace(".", ",")))
+            righe.append((f"Quantità ({capitale} € per questo mercato)", f"{quantita:g}".replace(".", ",")))
         elif quantita == 0:
             righe.append(("Quantità", f"con {capitale} € non puoi comprarne nemmeno una"))
         else:

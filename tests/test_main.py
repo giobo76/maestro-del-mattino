@@ -236,3 +236,11 @@ def test_segna_operazione_inesistente(tmp_path):
 
 def test_deve_partire_segna():
     assert deve_partire("segna", ora("2026-07-15T03:00"), {"fatto_mattina": "2026-07-15"})
+
+
+def test_capitale_diviso_tra_i_mercati(tmp_path):
+    cfg = dataclasses.replace(config_piccola(), ibkr_mercati=["ITA", "USA"], ibkr_capitale_eur=1000)
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    ita = {x["mercato"]: x for x in leggi_oggi(tmp_path / "dati" / "oggi.json")["schede"]}["ITA"]
+    assert ita["capitale"] == 500
+    assert ita["quantita"] == int(500 // ita["livelli"]["riferimento"])

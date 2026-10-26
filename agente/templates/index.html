@@ -87,7 +87,7 @@ a { color: var(--accento); }
   </table>
   {% set capitale = (s.capitale or 100) | it_num(0) %}
   {% if s.quantita %}
-  <p class="dettaglio">Con il tuo conto da {{ capitale }} €: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
+  <p class="dettaglio">Con i {{ capitale }} € destinati a questo mercato: <b>{{ s.quantita | it_num(4 if v == "USD" else 0) }} azioni</b>; se scatta lo stop perdi circa {{ s.perdita_massima | it_num(2) }} € più le commissioni.</p>
   {% elif s.quantita == 0 %}
   <p class="nota">Il titolo costa più del tuo capitale: con {{ capitale }} € non puoi comprarne nemmeno una.</p>
   {% else %}
