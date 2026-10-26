@@ -2,7 +2,12 @@
 import html as html_lib
 import json
 import logging
+import math
 import urllib.request
+from datetime import date, datetime, time
+from zoneinfo import ZoneInfo
+
+from agente.calendario import ROMA
 
 from agente.operazioni import Messaggio
 
@@ -31,9 +36,48 @@ def invia(oggetto: str, html: str, destinatario: str, chiave: str | None,
         return False
 
 
+def _decimali(valore: float) -> int:
+    return 3 if valore < 10 else 2  # sotto i 10 € un centesimo è troppo grossolano per gli ordini
+
+
 def _prezzo(valore: float, valuta: str) -> str:
-    testo = f"{valore:,.2f}".replace(",", "§").replace(".", ",").replace("§", ".")
+    testo = f"{valore:,.{_decimali(valore)}f}".replace(",", "§").replace(".", ",").replace("§", ".")
     return testo + (" €" if valuta == "EUR" else " $")
+
+
+def _tws(valore: float) -> str:
+    """Prezzo come va scritto in TWS: punto decimale, nessun separatore delle migliaia."""
+    return f"{valore:.{_decimali(valore)}f}"
+
+
+def _apertura(mercato: str, oggi: date) -> str:
+    if mercato == "ITA":
+        return "09:00"
+    new_york = datetime.combine(oggi, time(9, 30), tzinfo=ZoneInfo("America/New_York"))
+    return new_york.astimezone(ROMA).strftime("%H:%M")  # 14:30 nelle settimane del cambio d'ora
+
+
+def _istruzioni_tws(s: dict, oggi: date) -> str:
+    lv, n = s["livelli"], s["quantita"]
+    meta = n // 2 if s["mercato"] == "ITA" else math.floor(n / 2 * 10000) / 10000
+    passi = [
+        f"<b>Prima delle {_apertura(s['mercato'], oggi)}</b> (apertura): ACQUISTARE, Q.TÀ <b>{n:g}</b>, "
+        "tipo <b>MKT</b>, durata DAY → INVIA.",
+        "Subito dopo, prima che l'acquisto venga eseguito: clic destro sulla riga dell'ordine → "
+        "Allega → <b>Ordini bracket</b>. Sostituisci i prezzi proposti da TWS:"
+        f"<br>• ProfitTaker: LMT <b>{_tws(lv['prima_uscita'])}</b>, quantità <b>{meta:g}</b>, durata GTC"
+        f"<br>• StopLoss: STP <b>{_tws(lv['stop'])}</b>, quantità <b>{n:g}</b>, durata GTC"
+        "<br>Controlla con doppio clic su ogni riga, poi Trasmetti.",
+        "Dopo l'apertura, ad acquisto eseguito: doppio clic sullo StopLoss → Visualizzazioni \"Completa\" → "
+        f"Adegua Stop: tipo STP, innesco <b>{_tws(lv['pareggio'])}</b>, stop adeguato = <b>il tuo prezzo "
+        "d'ingresso</b> → Trasmetti. Così lo stop sale al pareggio da solo.",
+    ]
+    elenco = "".join(f"<li style='margin:4px 0'>{p}</li>" for p in passi)
+    return ("<details open style='background:#f3f6fa;padding:6px 10px;margin-top:8px'>"
+            "<summary><b>Come inserirlo in TWS</b></summary>"
+            f"<ol style='padding-left:18px'>{elenco}</ol>"
+            "<p style='font-size:12px'>Mai una vendita LMT sotto il prezzo attuale per proteggerti: "
+            "si esegue subito. Per lo stop si usa sempre STP.</p></details>")
 
 
 def _pagina(contenuto: str, url_pagina: str) -> str:
@@ -43,7 +87,8 @@ def _pagina(contenuto: str, url_pagina: str) -> str:
             "Non è una consulenza finanziaria.</p></div>")
 
 
-def email_mattina(schede: list[dict], url_pagina: str) -> tuple[str, str] | None:
+def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None) -> tuple[str, str] | None:
+    oggi = oggi or datetime.now(ROMA).date()
     nuove = [s for s in schede if s.get("nuova")]
     if not nuove:
         return None
@@ -67,8 +112,9 @@ def email_mattina(schede: list[dict], url_pagina: str) -> tuple[str, str] | None
             righe.append(("Quantità", "mercato non incluso nel tuo conto IBKR: solo simulazione"))
         tabella = "".join(f"<tr><td style='padding:4px 8px'>{html_lib.escape(a)}</td>"
                           f"<td style='padding:4px 8px'><b>{html_lib.escape(b)}</b></td></tr>" for a, b in righe)
+        tws = _istruzioni_tws(s, oggi) if quantita and not s.get("sotto_soglia") else ""
         blocchi.append(f"<h3>{html_lib.escape(s['nome'])} ({html_lib.escape(s['simbolo'])})</h3>{studio}"
-                       f"<table style='border-collapse:collapse'>{tabella}</table>")
+                       f"<table style='border-collapse:collapse'>{tabella}</table>{tws}")
     blocchi.append(f'<p style="font-size:13px">Non esegui un ordine? <a href="{URL_SEGNA}">Segnalo qui</a>: '
                    "Run workflow → comando <b>segna</b>, scegli il mercato ed eseguita <b>no</b>. "
                    "L'agente la seguirà solo su carta e il giorno dopo potrà proporne una nuova.</p>")

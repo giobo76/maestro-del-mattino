@@ -1,4 +1,5 @@
 import json
+from datetime import date
 import urllib.error
 
 from agente.operazioni import Messaggio
@@ -74,7 +75,7 @@ def test_email_mattina_senza_operazioni_none():
 def test_email_mattina_livelli():
     oggetto, html = email_mattina([scheda(), scheda(nome="Palantir", sotto_soglia=True, valuta="USD")], URL)
     assert oggetto == "📈 Nuova operazione: Campari, Palantir"
-    assert "6,38 €" in html and "7,10 €" in html and "Stop loss" in html
+    assert "6,380 €" in html and "7,100 €" in html and "Stop loss" in html
     assert "solo studio" in html and URL in html
 
 
@@ -85,3 +86,37 @@ def test_email_mattina_quantita_zero_e_solo_simulato():
     assert "con 1.000 € non puoi" in html
     _, html = email_mattina([scheda(quantita=None)], URL)
     assert "non incluso nel tuo conto" in html
+
+
+def test_prezzi_sotto_10_con_tre_decimali():
+    _, html = email_mattina([scheda(livelli={"riferimento": 5.958, "r": 0.17, "stop": 5.7882,
+                                             "pareggio": 6.1277, "prima_uscita": 6.2976})], URL)
+    assert "5,788 €" in html and "6,298 €" in html
+
+
+def test_email_mattina_istruzioni_tws():
+    _, html = email_mattina([scheda(quantita=167, livelli={"riferimento": 5.958, "r": 0.17, "stop": 5.7882,
+                                                           "pareggio": 6.1277, "prima_uscita": 6.2976})],
+                            URL, oggi=date(2026, 10, 26))
+    assert "Come inserirlo in TWS" in html and "Prima delle 09:00" in html
+    assert "Q.TÀ <b>167</b>" in html and "Ordini bracket" in html
+    assert "LMT <b>6.298</b>" in html and "quantità <b>83</b>" in html  # metà per difetto in Italia
+    assert "STP <b>5.788</b>" in html and "innesco <b>6.128</b>" in html
+
+
+def test_istruzioni_tws_usa_orario_e_frazioni():
+    _, html = email_mattina([scheda(mercato="USA", valuta="USD", nome="Caterpillar", simbolo="CAT", quantita=1.6335,
+                                    livelli={"riferimento": 687.0, "r": 54.75, "stop": 632.25,
+                                             "pareggio": 741.75, "prima_uscita": 796.50})],
+                            URL, oggi=date(2026, 10, 26))
+    assert "Prima delle 14:30" in html  # settimana del cambio d'ora: New York apre un'ora prima
+    assert "quantità <b>0.8167</b>" in html and "LMT <b>796.50</b>" in html
+    _, html = email_mattina([scheda(mercato="USA", valuta="USD", quantita=1.6335)], URL, oggi=date(2026, 11, 3))
+    assert "Prima delle 15:30" in html
+
+
+def test_istruzioni_tws_assenti_se_solo_studio_o_senza_quantita():
+    _, html = email_mattina([scheda(sotto_soglia=True)], URL, oggi=date(2026, 10, 26))
+    assert "Come inserirlo in TWS" not in html
+    _, html = email_mattina([scheda(quantita=0)], URL, oggi=date(2026, 10, 26))
+    assert "Come inserirlo in TWS" not in html
