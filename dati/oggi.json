@@ -1,156 +1,25 @@
 {
-  "data": "2026-10-26",
+  "data": "2026-10-27",
   "schede": [
     {
       "mercato": "ITA",
-      "simbolo": "SRG.MI",
-      "nome": "Snam",
-      "resa": 0.3817638039481083,
-      "casi": 1103,
-      "pct_stop": 0.40344514959202177,
-      "pct_2r": 0.3399818676337262,
-      "situazione": "trend=su|rsi=alto|macd=nessuno|vol=normale|rottura=si|giorno=normale",
-      "livelli": {
-        "riferimento": 5.958000183105469,
-        "r": 0.16974838703438033,
-        "stop": 5.788251796071089,
-        "pareggio": 6.127748570139849,
-        "prima_uscita": 6.297496957174229
-      },
-      "giudizio_notizie": "neutro",
-      "notizie": [
-        {
-          "titolo": "Fondi idrogeno PNRR: i numeri del 2026 - Motori Magazine",
-          "link": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNMFM3UHBneHIyU2pSLUVPOXNuRWFwNElRWUN5RTN6cGF2VE5hbmxaV2RUOGRuTDRvUXJWTXcxRHBQTlVRRHJQUC1uSmExbHVtdExYbG92bV9DTkF4RDF6ZkVyNjFYYU5jR1lFUExyOXg0WTdQbHhqSWtSTVp0aXlwcGIxb3lpeF9CMVo2TFJnNGpGcVoxZjZN?oc=5",
-          "fonte": "Motori Magazine",
-          "data": "2026-10-26 05:41:30+00:00"
-        },
-        {
-          "titolo": "Lega Nazionale Sport Inclusivo Snam ai nastri di partenza: lo sport diventa protagonista dell'inclusione - Redazione AriaMediterranea",
-          "link": "https://news.google.com/rss/articles/CBMi7wFBVV95cUxNbGpSQXVaN2tvU2tGeWNLYTFOcXJKRDZnOWpoOV9BdXllMFE5M3BZdEhLM2tlQUFyN2hNN3ZtQTVPMXhMSGNtRmtsb3ZqWlNVTGotNnMtNkZNdjJxV2FCcUNhdjdUZjdCUmRBSXRpTl9hRVRfQm43cC1qekRBV2MzTl8tOHlQSUxnVEl0aWQ1Rko3SUh3MXJxeEFfb3FWNzJieUM1ZENkNTl4czVVVnVQZGRzeFQ2VUYyaDl5WDR2OFNtWmgybGhkQzNwdUpnZXIwQURvMjR6bC1rNGI5eDVXZ3BSV3FodnJtQkhfbjJ6Zw?oc=5",
-          "fonte": "Redazione AriaMediterranea",
-          "data": "2026-10-25 20:44:15+00:00"
-        },
-        {
-          "titolo": "Saipem, Bernstein incrementa target price e conferma Outperform - LaChirico.it",
-          "link": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOS0VjUVItcDVzNWluVXJxakZvZGd4dUtkb1poaEFsTGkxd3Y0M2RzUnlDTDhkczNZVnMtQk9EbmJlaV9aZWJkX2F2YU9Yb25nWmZaRVMyTV8yMVltb2RULTQxaWFzeFRFMTBRcVBkcXJVY3Bqc1ZIRzFpU3pWYVhveWZpQ3JNV0FCTld2YkRjX2xrdEdKUnZmbXM5WVJZbTBY?oc=5",
-          "fonte": "LaChirico.it",
-          "data": "2026-10-25 20:38:01+00:00"
-        }
-      ],
-      "scartati": [],
-      "sotto_soglia": false,
-      "nota": "",
       "nome_mercato": "Borsa Italiana",
       "valuta": "EUR",
-      "nuova": true,
-      "grafico": "dati/grafici/ITA.png",
-      "testi": {
-        "perche": "Il titolo Snam evidenzia una tendenza al rialzo con un segnale di rottura, sebbene l'indicatore RSI sia alto e indichi una forte spinta recente dei prezzi. Sul fronte delle notizie, il contesto è animato dalle novità sui fondi del PNRR legati all'idrogeno verso il 2026 e da iniziative aziendali di inclusione nello sport. Il piano prevede di entrare in acquisto all'apertura rispetto alla chiusura di riferimento di 5,96, alzando lo stop loss al prezzo d'ingresso appena si toccano i 6,13 (+1R). Raggiunta la quota di 6,30 (+2R) si vende metà della posizione, tenendo la restante parte finché il titolo non chiude sotto la media mobile a 20 giorni. In passato, su 1103 operazioni simili, si è registrata una resa media di +0,38R con il traguardo di +2R raggiunto nel 34% dei casi.",
-        "rischio": "Il rischio principale è che il prezzo inverta la rotta subito dopo l'apertura e colpisca lo stop loss a 5,79, causando una perdita del 2,85% rispetto al valore di 5,96. Nello storico dei casi analoghi, l'uscita con stop pieno si è verificata nel 40% delle volte.",
-        "parola": "RSI",
-        "parola_spiegazione": "È un indicatore tecnico che misura la velocità e l'intensità con cui un prezzo è salito o sceso negli ultimi giorni. Quando è alto, evidenzia che ci sono stati molti acquisti concentrati e che il titolo potrebbe presto rallentare o rifiatare. Funziona come il tachimetro di un'auto, segnalando se la velocità del rialzo è stata particolarmente sostenuta."
-      },
-      "quantita": 167,
-      "perdita_massima": 28.347980634741514,
-      "costo_r": 0.1322845548795188,
+      "nuova": false,
+      "simbolo": null,
       "posizione_id": "2026-10-23-ITA",
-      "capitale": 1000
+      "nota": "Posizione già aperta su Snam (aperta): oggi nessuna nuova operazione su questo mercato."
     },
     {
       "mercato": "USA",
-      "simbolo": "CAT",
-      "nome": "Caterpillar",
-      "resa": 0.4117311828837125,
-      "casi": 1026,
-      "pct_stop": 0.34210526315789475,
-      "pct_2r": 0.37037037037037035,
-      "situazione": "trend=giu|rsi=basso|macd=nessuno|vol=normale|rottura=no|giorno=forte_giu",
-      "livelli": {
-        "riferimento": 687.0,
-        "r": 54.75185426540955,
-        "stop": 632.2481457345905,
-        "pareggio": 741.7518542654095,
-        "prima_uscita": 796.503708530819
-      },
-      "giudizio_notizie": "neutro",
-      "notizie": [
-        {
-          "titolo": "Evolution Mining on partnering with Caterpillar to reduce emissions - International Mining",
-          "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQU1NvRUk0dnZheW1XODBaQzNrM0xodGVDV3RmY1piUUxsOGRUU2JvUEZ1WWZLV0g2UmJSQ2JvWFBHb1J2c241QUd4emp5SXVwWnR6NXdycVpfelV0eXRpR25PZGg1NWIyWXdEbTdVbE5ESUFhR0NHV1dzWGlZOXROazZDbk9fX1lzZ3BjRFVPb2l6aVRDajVWSld3R19qbHZYaFg4?oc=5",
-          "fonte": "International Mining",
-          "data": "2026-10-26 06:06:27+00:00"
-        },
-        {
-          "titolo": "Queensland tackles a common yet critical problem - Australian Resources & Investment",
-          "link": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPaG9TN1M3VXFlRWFHSUVTUTV0M2hnQ1YzMFJ3Q0JtTTJuX0xJZzYyZGNSbnZzZUdzWXRXTzlkdWpBbXo5SXpNSGZCd0tNdzVUMUR4dUZOVDZMcV9sYlFoS1FjWTJoTkpxZ2l1OVFzX2xnUTcyaEgtTW5CVkNOYi1OUE9vN3JsTXZ1UXBxQjNjOWdCOWxheHQ0azhucE5KZlMwT2xB?oc=5",
-          "fonte": "Australian Resources & Investment",
-          "data": "2026-10-26 04:00:33+00:00"
-        },
-        {
-          "titolo": "Etango set to be ‘next major greenfield uranium project globally’ - Australian Resources & Investment",
-          "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPS0ttalMwYzQxM1hjemRvcHM3N3J0b3oxZGkxcDVFYVREeVkxUG1xdGtBTE5EZTQyczY0Z1Q5cXMtWWpraVk0NXJrOWFVYnJtNk9OYkp5U3VXNGpvMkd0YXJGZ3Z3VzJOVnpGcklJU0JsMGpyc0p0TzFucUcta1pZVWwyeDRpWmdYeEVHOXRzb24waWtwb3JoWnNQUm1IZHVVZVQ0QmRpT0ZGT0xhZGlqZnpNUHA0UTg?oc=5",
-          "fonte": "Australian Resources & Investment",
-          "data": "2026-10-26 03:10:09+00:00"
-        },
-        {
-          "titolo": "S&P500: AI Spending, Big Tech Earnings and Fed Risk Test US Stock Market - FXEmpire",
-          "link": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOQ1VJWGlnOHFVWXYzbDAwVHFoaDE4MXUxelhGQnFINkt6XzJraVdQaUpBdjdudGxUYWI4OWtJWmwxRWJwSl80cXcyY25ZZk9YUmZJMG0yMEpPUHd4d2Z4T2tBWkpaMWczZkxHa1l1dGIwU0R1Z1ZWNFA1ZjRWcld5eUtyQlp0RzYxSWM3Y2gwNjMxdFlFN1RfUGVOMzJUa2o1Mjg2S19DQmFqa1Zxd1M3ZzlxeFN4V0JvMDRqNw?oc=5",
-          "fonte": "FXEmpire",
-          "data": "2026-10-26 00:44:00+00:00"
-        },
-        {
-          "titolo": "Antique construction, mining equipment show draws crowds in Mingo Junction, Ohio - WTOV",
-          "link": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxOWXZmU09BMVdKdnFXRkhvVEhuLVZiaVRVZ2RSeDdtRDM1aGRHODU1NWs0bWp6cVNDU2Y4TDdwNjM2NWhDbS1rVnotek5rOFFGb2lJdDJoX0Fnemt0YkpsZ3JOekJRN1VSbmJyNmUxQ25PRmhwRFNLWUtKZEtHVWdPQklPbXlHck5MMFlRXy05VDYxcHVRMGRoYldEZE5ZcGpUUHJpN2pId2RkNkk?oc=5",
-          "fonte": "WTOV",
-          "data": "2026-10-25 23:17:01+00:00"
-        },
-        {
-          "titolo": "ASX set to fall 0.5% as oil prices surge - Sharecafe",
-          "link": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOTktYVVFfVElvZW9wZGtTRmtMMUl1ZU5fMThWVkt5aXhZRXZWanFXSElmWmVkWUJmRk96VVRIX2E5SEFTQ3hidzIxSmVvOUM2UmRrVUc1TklkS1kzc1JwT2tTUGR0ZWRGbG1aUDNkRTNiRWd4M1VGZE9JaXYtWTFBSkc3Wi1Qb0k?oc=5",
-          "fonte": "Sharecafe",
-          "data": "2026-10-25 22:01:52+00:00"
-        },
-        {
-          "titolo": "Free people beige midi open sweater cardigan kimono chunky cable knit sweater M - khorasantimes.com",
-          "link": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE9ZaWxVYjNqOUZQM3RfendlUWdZMkktMDJQY0p1SmVkVnk0cko4cUlDNmswcDFydS1Vbk05OGU5YnpjQnNPUVZoVkJBOTR3UQ?oc=5",
-          "fonte": "khorasantimes.com",
-          "data": "2026-10-25 20:22:46+00:00"
-        },
-        {
-          "titolo": "Caterpillar (CAT) Turns The Page In Resource Industries As Denise Johnson Retires - Simply Wall Street",
-          "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxOYU4zdG96U1FJSUE5TlZ1YXNXVXh5OGFFeTgtYTNfQ3JZOXhLLWNDN01JelNzWGdjam5aT3BIc1MzVkJ2OHJyUXEwMFdEcnVwallmV21XRmhhZlZHU2pEa1ZWcVBWMnkxbThUeXVLQjNuQXFyV0tRb2ZjQXF5RVpWc2FqZnZlblhSU21OaC1oazFaZVVXVnhZcXBmSUtwR3ZOYndHbW1OeldaRURaazVVT2tDM2YwUVl6b2sxUFBCZHhhSzVsSzcxeUVFNVbSAdIBQVVfeXFMUF9VcnpFenlKbEg0ZGJvejR2S0pBMU05OEFuZTMtQnZ4c3pJeG94eEoySnFNSUxydE5qRzJ5eTV0aG4tVC1QQlBXQ2RLSDYwWnItVnl1ZGdicWd6MTZFbEtHbnd0ODV2V08zaVNiVkRZY0hsOEtjbmN5RGNxQ0hhQmZSOEhORXhZVVJtbmpwWWdCSzdDM2U1cjJfR1Zma3RQV21IXzF1eHY1RFY5SXNfN0FFM0NxUDRtb01LMVV3azJZZGhDRWhxVkNiUHRxbnBBb0t3?oc=5",
-          "fonte": "Simply Wall Street",
-          "data": "2026-10-25 19:46:55+00:00"
-        },
-        {
-          "titolo": "Shares fall in Asia after a decline on Wall Street, and oil prices fall more than 1% - YourCentralValley.com",
-          "link": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxONjJ0Y0NUWUY5eWNYbDlvM2h2Mldhbm11OVFfN1VEU215Z0tLSzZsMXdBRENJSzhheUVhY2czQXJXMDRVMmFNRGFJejFiamhfS2txdzhHMTY1XzhsSHNJQVpPblgxdXV6MGJyb25mZG9TMmxETk5zdmpZT0pwWWFzeDBuSnA5NGVuejJlalF3Y2ZzVHlZUE5zbzY5MDJRM2VwM0NLcnFNNzVoMlJoUmNhUWpCa2N2NGxGRV9LUTA3UzU1Q0hSY1dFR1VzUUFWVEZnd1JteNIB1AFBVV95cUxONjJ0Y0NUWUY5eWNYbDlvM2h2Mldhbm11OVFfN1VEU215Z0tLSzZsMXdBRENJSzhheUVhY2czQXJXMDRVMmFNRGFJejFiamhfS2txdzhHMTY1XzhsSHNJQVpPblgxdXV6MGJyb25mZG9TMmxETk5zdmpZT0pwWWFzeDBuSnA5NGVuejJlalF3Y2ZzVHlZUE5zbzY5MDJRM2VwM0NLcnFNNzVoMlJoUmNhUWpCa2N2NGxGRV9LUTA3UzU1Q0hSY1dFR1VzUUFWVEZnd1JteA?oc=5",
-          "fonte": "YourCentralValley.com",
-          "data": "2026-10-25 19:44:03+00:00"
-        },
-        {
-          "titolo": "The Fed, Inflation, Verizon, Boeing, Alphabet, GE Vernova, Amazon, and Many More Stocks to Watch This Week",
-          "link": "https://finance.yahoo.com/m/0d4242d7-b2c9-3bd4-9e03-715369986b85/the-fed%2C-inflation%2C-verizon%2C.html?.tsrc=rss",
-          "fonte": "feeds.finance.yahoo.com",
-          "data": "2026-10-25 19:12:00+00:00"
-        }
-      ],
-      "scartati": [],
-      "sotto_soglia": false,
-      "nota": "",
       "nome_mercato": "Stati Uniti",
       "valuta": "USD",
-      "nuova": true,
-      "grafico": "dati/grafici/USA.png",
-      "testi": null,
-      "quantita": 1.6335,
-      "perdita_massima": 79.69745002820626,
-      "costo_r": 0.019268559090632506,
+      "nuova": false,
+      "simbolo": null,
       "posizione_id": "2026-10-23-USA",
-      "capitale": 1000
+      "nota": "Posizione già aperta su Caterpillar (aperta): oggi nessuna nuova operazione su questo mercato."
     }
   ],
-  "fatto_mattina": "2026-10-26",
-  "fatto_sera": "2026-10-26"
+  "fatto_mattina": "2026-10-27",
+  "fatto_sera": null
 }
