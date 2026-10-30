@@ -1,5 +1,5 @@
 {
-  "data": "2026-10-29",
+  "data": "2026-10-30",
   "schede": [
     {
       "mercato": "ITA",
@@ -12,14 +12,105 @@
     },
     {
       "mercato": "USA",
+      "simbolo": "CAT",
+      "nome": "Caterpillar",
+      "resa": 0.4017157490013306,
+      "casi": 338,
+      "pct_stop": 0.34615384615384615,
+      "pct_2r": 0.3343195266272189,
+      "situazione": "trend=giu|rsi=basso|macd=nessuno|vol=alto|rottura=no|giorno=forte_giu",
+      "livelli": {
+        "riferimento": 647.3900146484375,
+        "r": 60.55898664431297,
+        "stop": 586.8310280041245,
+        "pareggio": 707.9490012927505,
+        "prima_uscita": 768.5079879370635
+      },
+      "giudizio_notizie": "neutro",
+      "notizie": [
+        {
+          "titolo": "Caterpillar Q3 Earnings Call Highlights",
+          "link": "https://www.marketbeat.com/instant-alerts/transcript-caterpillar-q3-earnings-call-highlights-2026-10-30/?utm_source=yahoofinance&utm_medium=yahoofinance&.tsrc=rss",
+          "fonte": "feeds.finance.yahoo.com",
+          "data": "2026-10-30 06:14:11+00:00"
+        },
+        {
+          "titolo": "Caterpillar shares slump 10% despite earnings beat amid rapid AI buildout - Investing.com",
+          "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxORmZTQVpMQ0FFQnJFeGxTUlRWWjlHUHpYclVVSzBXWFBtV2ZONkpYWWl0elE3OEtacDdDR3p0bXVNblRLNUtzZGQySThCVEFYWlBtZjdmWGRUWjh5azZhSkp5bHd2aEkxUzlXa0VYVGlWNjZUMVNzSkVBQ1A5amc5OUJiZzFSbDBsbzI2NF93RnV4UjBSRndaMVFjWEFvVVJGNFNSSDFjQzNyZw?oc=5",
+          "fonte": "Investing.com",
+          "data": "2026-10-30 00:33:45+00:00"
+        },
+        {
+          "titolo": "Caterpillar posted record revenue and backlog but its stock still fell - Startup Fortune",
+          "link": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOcXhicTZnYlpHUUFWYWVobU1VbXRSNi1UZGZEdFhHQ29idXVEdXo0elBucjI3MFFHVlRXem1Dc1MxZDQzSkNsdTFnRld5UVBrVC1MRmNyWkliOGV4RE1hOENmcGEzSGk3djVveEtwcFkwRWI3NjNZNENnTHhINnR4RGZxSmwyM0UxSmUzcUw2UmRuQmNHZWxkdTdnUnJYZzQ?oc=5",
+          "fonte": "Startup Fortune",
+          "data": "2026-10-30 00:11:11+00:00"
+        },
+        {
+          "titolo": "Dow Jones Today: DJIA Drops to 52,163.07 as Caterpillar Slides and Alphabet Drags on Tech - BBN Times",
+          "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxON0xmbnJRaGxtdHJqX29kYnVWVXEwTm45WGhLYWNpQkhCTnRLM2tXSnlNUEM1dWtiS1dka1pubFFVUUYwSC1oYXNpQ1d4aGJjMERUSFBVRG5ReWhBVGdwWE4yeDhuYjU1UHRzdXlTbk5tUDNKcGl5ODc0UTFnQnhpU1Y4UU1CbVJ4N1pZUEtGQlhEYTR4WUhXVDdKekRDY0JIaFRqcFplLW1La21qUlNJSkNlRVFnNU14c3FueDZXVXI1Z3F5eDRZ?oc=5",
+          "fonte": "BBN Times",
+          "data": "2026-10-30 00:00:55+00:00"
+        },
+        {
+          "titolo": "Single-day stock drops in 2026: 5 major company plunges - qz.com",
+          "link": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1sZ2xRUURYOHc4VDZWZ0o5TUpDelppU0hfNURfZ1ptSk56cWRmRENuNVJXUV9HY2p5b1FPSWZXVVRBcTFKcjc2MDJUbmNaTjRJbFIxblU4N1hITWVVV29mVXczbWlWMnJKZXc?oc=5",
+          "fonte": "qz.com",
+          "data": "2026-10-29 23:46:11+00:00"
+        },
+        {
+          "titolo": "Caterpillar Inc. (CAT) Seasonal returns chart - Yahoo Finance UK",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE4wWGloVDlKOHh5emtDblBDWXFBbXpIbkZ1VXJQekVoZDVzd1JKMFNfU3QzYXBBeVNTZ3piUzkxVUJrdi11T2tZb3Y4TFJpOHR3NjJnd2NLdldoa2V2eVphcQ?oc=5",
+          "fonte": "Yahoo Finance UK",
+          "data": "2026-10-29 22:35:48+00:00"
+        },
+        {
+          "titolo": "Industrials Up Despite Caterpillar Selloff -- Industrials Roundup - Moomoo",
+          "link": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPUllhQ1NVYmxvc1EzMnk0N01aTm8wcmhrQzU1aFFHeXZLSGhKWGllUzhXWlJMcnU0aDVLVTY0bC1SamQ1VWxURlhFaG9RTVVxa0VpRmx3OHpuQU0xX0h6SzYzY3VqaGVoRGREQUxCblgxV3Z1ZmxfZlVjajFQMzlsWjVBWks3bnZYdDhTZVpnX2dwaGRycmRKRE9nX1NkbEw3QlhaNHFuZ3ZJQQ?oc=5",
+          "fonte": "Moomoo",
+          "data": "2026-10-29 22:24:07+00:00"
+        },
+        {
+          "titolo": "Caterpillar Inc. (CAT) Seasonal Returns Chart - Yahoo Finance - Yahoo! Finance Canada",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1oWFNQNzR2VE1GX3F3Ull2cGE0eEhieklPYjZfOXF2cUo4QXBwTW9qRjJnbUUwbG1Xb1M5S1dXbzBrcEJoUnVzRnR1WjA3NGpEVTJXblhIZTFmLXRSZTN3Ng?oc=5",
+          "fonte": "Yahoo! Finance Canada",
+          "data": "2026-10-29 22:08:24+00:00"
+        },
+        {
+          "titolo": "Caterpillar Inc. (CAT) Seasonal returns chart - Yahoo Finance Australia",
+          "link": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5xOVVWbUQwOVhYYmJtVVI4YWl1X2VZUlRQOWxkcUJHTTVHemxmYzFhNTdIbXhLSUhKUlVXcUl6dWstcUhiRjZRamJvTlM3WlRZTk5ib3djQ0tLR05Vd2xzSA?oc=5",
+          "fonte": "Yahoo Finance Australia",
+          "data": "2026-10-29 22:06:11+00:00"
+        },
+        {
+          "titolo": "Cat Financial revenue rises 10% in Q3 - Equipment Finance News",
+          "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOV3lmZzRCaV9Lb29ENGlfQzVzYjU4cWxCWFM0WHJpQmxzNlFUcFQwYWtUWDUyMUhYV2V0U1pmRTdOOUpvb1g2QThOeGpfdFNqMWFJWjFPcEZ5Q3dNOEpHd2MzRGdNZ2JtSGFZU1Rad0FzLVRkRDBkS0txYl9sbWZSVHpxeEE1VnA3cE5NX0VUYm5BZw?oc=5",
+          "fonte": "Equipment Finance News",
+          "data": "2026-10-29 22:00:27+00:00"
+        }
+      ],
+      "scartati": [
+        "GOOGL"
+      ],
+      "sotto_soglia": false,
+      "nota": "",
       "nome_mercato": "Stati Uniti",
       "valuta": "USD",
-      "nuova": false,
-      "simbolo": null,
-      "posizione_id": "2026-10-23-USA",
-      "nota": "Posizione già aperta su Caterpillar (aperta): oggi nessuna nuova operazione su questo mercato."
+      "nuova": true,
+      "grafico": "dati/grafici/USA.png",
+      "testi": {
+        "perche": "Il titolo Caterpillar ha subito una forte caduta recente, evidenziata dalle notizie su un calo del 10% nonostante ricavi record, per via dei timori legati alle spese nel settore tecnologico. I segnali tecnici mostrano una giornata fortemente ribassista con volumi elevati e trend verso il basso, ma l'indicatore RSI su livelli bassi suggerisce che le vendite potrebbero essere state eccessive. Il piano operativo stabilisce di entrare all'apertura con uno stop loss fissato a 586,83, per poi proteggere il capitale a 707,95 (+1R) portando lo stop al prezzo d'ingresso e monetizzare metà posizione a 768,51 (+2R). La parte restante dell'investimento verrà mantenuta finché il prezzo non chiude sotto la media mobile a 20 giorni, confidando nelle statistiche passate che su 338 operazioni simili hanno mostrato una resa media di +0,40R.",
+        "rischio": "Il pericolo principale consiste nel fatto che il titolo prosegua la sua discesa colpendo lo stop loss a 586,83, determinando una perdita del 9,35% rispetto alla chiusura di riferimento di 647,39. In base ai dati storici della scheda, questo scenario di stop pieno si è verificato nel 35% delle operazioni passate.",
+        "parola": "MACD",
+        "parola_spiegazione": "Il MACD è uno strumento grafico che confronta diverse velocità del prezzo per capire se la spinta del mercato è positiva o negativa. Per esempio, se le linee del MACD si incrociano verso l'alto, indicano che la forza dei compratori sta aumentando rispetto a quella dei venditori. Nella scheda il valore è indicato come nessuno perché non è presente alcun segnale netto di acquisto o di vendita generato da questo strumento."
+      },
+      "quantita": 0.8642,
+      "perdita_massima": 46.77185873346241,
+      "costo_r": 0.02647713935763832,
+      "posizione_id": "2026-10-29-USA",
+      "capitale": 500.0
     }
   ],
-  "fatto_mattina": "2026-10-29",
-  "fatto_sera": "2026-10-29"
+  "fatto_mattina": "2026-10-30",
+  "fatto_sera": null
 }
