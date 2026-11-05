@@ -100,13 +100,34 @@ def _prezzo(op: Operazione, valore: float) -> str:
         (" €" if op.mercato == "ITA" else " $")
 
 
+def _tws(valore: float) -> str:
+    """Prezzo come va scritto in TWS: punto decimale, 3 decimali sotto i 10."""
+    return f"{valore:.{3 if valore < 10 else 2}f}"
+
+
+# Promemoria per il conto IBKR: non servono per le operazioni seguite solo su carta.
+PROMEMORIA_TWS = {
+    "prima_uscita": lambda op: (
+        " In TWS la vendita di metà può annullare anche lo stop: apri «In sospeso (tutti)» e controlla che ci sia "
+        "ancora uno stop per le azioni rimaste. Se manca, reinseriscilo dalla scheda Portafoglio: VENDERE le "
+        f"azioni rimaste, tipo STP, colonna «Prezzo stop» {_tws(op.ingresso)} (con il punto), durata GTC."),
+    "stop": lambda op: (
+        " Controlla in TWS che le azioni siano state vendute davvero: se le hai ancora, vendile a mercato "
+        "(MKT) alla prossima apertura e annulla eventuali vecchi ordini rimasti in «In sospeso»."),
+}
+
+
 def _r(valore: float) -> str:
     return f"{valore:+.2f}R".replace(".", ",").replace("-", "−")
 
 
 def testo_evento(op: Operazione, evento: str) -> str:
     testo = _testo_evento(op, evento)
-    return f"📝 Su carta (non eseguita): {testo}" if op.eseguita is False else testo
+    if op.eseguita is False:
+        return f"📝 Su carta (non eseguita): {testo}"
+    if evento in PROMEMORIA_TWS and op.ingresso is not None:
+        testo += PROMEMORIA_TWS[evento](op)
+    return testo
 
 
 def _testo_evento(op: Operazione, evento: str) -> str:

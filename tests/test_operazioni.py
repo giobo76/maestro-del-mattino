@@ -144,3 +144,24 @@ def test_messaggi_su_carta():
     op.eseguita = False
     [m] = aggiorna_operazioni([op], barre_da([("2026-10-19", 100, 101, 99, 100)]), date(2026, 10, 19), SEMPRE)
     assert m.testo.startswith("📝 Su carta") and "Campari" in m.testo
+
+
+def _op_con(stato_eseguita):
+    op = nuova_operazione(scelta(), date(2026, 10, 16))
+    op.eseguita = stato_eseguita
+    op.ingresso, op.prezzo_meta, op.prezzo_uscita = 5.946, 6.2975, 5.80
+    op.stato = "chiusa"
+    return op
+
+
+def test_meta_venduta_ricorda_di_reinserire_lo_stop():
+    from agente.operazioni import testo_evento
+    testo = testo_evento(_op_con(None), "prima_uscita")
+    assert "reinseriscilo" in testo and "STP" in testo and "5.946" in testo and "GTC" in testo
+    assert "reinseriscilo" not in testo_evento(_op_con(False), "prima_uscita")  # su carta: nulla da fare in TWS
+
+
+def test_stop_ricorda_di_controllare_la_vendita():
+    from agente.operazioni import testo_evento
+    assert "vendile a mercato" in testo_evento(_op_con(None), "stop")
+    assert "vendile a mercato" not in testo_evento(_op_con(False), "stop")

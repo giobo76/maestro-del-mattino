@@ -102,6 +102,8 @@ def test_email_mattina_istruzioni_tws():
     assert "Q.TÀ <b>167</b>" in html and "Ordini bracket" in html
     assert "LMT <b>6.298</b>" in html and "quantità <b>83</b>" in html  # metà per difetto in Italia
     assert "STP <b>5.788</b>" in html and "innesco <b>6.128</b>" in html
+    assert "Prezzo stop" in html and "punto" in html
+    assert "metà viene venduta" in html and "VENDERE <b>84</b>" in html  # 167 - 83 rimaste
 
 
 def test_istruzioni_tws_usa_orario_e_frazioni():

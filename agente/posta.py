@@ -60,6 +60,7 @@ def _apertura(mercato: str, oggi: date) -> str:
 def _istruzioni_tws(s: dict, oggi: date) -> str:
     lv, n = s["livelli"], s["quantita"]
     meta = n // 2 if s["mercato"] == "ITA" else math.floor(n / 2 * 10000) / 10000
+    resto = round(n - meta, 4)
     passi = [
         f"<b>Prima delle {_apertura(s['mercato'], oggi)}</b> (apertura): ACQUISTARE, Q.TÀ <b>{n:g}</b>, "
         "tipo <b>MKT</b>, durata DAY → INVIA.",
@@ -67,10 +68,15 @@ def _istruzioni_tws(s: dict, oggi: date) -> str:
         "Allega → <b>Ordini bracket</b>. Sostituisci i prezzi proposti da TWS:"
         f"<br>• ProfitTaker: LMT <b>{_tws(lv['prima_uscita'])}</b>, quantità <b>{meta:g}</b>, durata GTC"
         f"<br>• StopLoss: STP <b>{_tws(lv['stop'])}</b>, quantità <b>{n:g}</b>, durata GTC"
+        "<br>I prezzi si scrivono con il <b>punto</b>; il prezzo dello stop va nella colonna "
+        "<b>«Prezzo stop»</b> (sotto «Ask» nella scheda Portafoglio)."
         "<br>Controlla con doppio clic su ogni riga, poi Trasmetti.",
         "Dopo l'apertura, ad acquisto eseguito: doppio clic sullo StopLoss → Visualizzazioni \"Completa\" → "
         f"Adegua Stop: tipo STP, innesco <b>{_tws(lv['pareggio'])}</b>, stop adeguato = <b>il tuo prezzo "
         "d'ingresso</b> → Trasmetti. Così lo stop sale al pareggio da solo.",
+        "Quando la <b>metà viene venduta</b> (+2R), TWS può annullare anche lo StopLoss. Apri «In sospeso (tutti)»: "
+        f"se lo stop non c'è più, dalla scheda Portafoglio inserisci VENDERE <b>{resto:g}</b>, tipo STP, "
+        "«Prezzo stop» = <b>il tuo prezzo d'ingresso</b>, durata GTC → Trasmetti.",
     ]
     elenco = "".join(f"<li style='margin:4px 0'>{p}</li>" for p in passi)
     return ("<details open style='background:#f3f6fa;padding:6px 10px;margin-top:8px'>"
