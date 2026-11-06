@@ -1,5 +1,5 @@
 {
-  "data": "2026-11-05",
+  "data": "2026-11-06",
   "schede": [
     {
       "mercato": "ITA",
@@ -12,98 +12,14 @@
     },
     {
       "mercato": "USA",
-      "simbolo": "INTC",
-      "nome": "Intel",
-      "resa": 0.4139563380326701,
-      "casi": 1029,
-      "pct_stop": 0.3391642371234208,
-      "pct_2r": 0.37026239067055394,
-      "situazione": "trend=giu|rsi=basso|macd=nessuno|vol=normale|rottura=no|giorno=forte_giu",
-      "livelli": {
-        "riferimento": 58.27000045776367,
-        "r": 12.845880545024269,
-        "stop": 45.4241199127394,
-        "pareggio": 71.11588100278794,
-        "prima_uscita": 83.96176154781222
-      },
-      "giudizio_notizie": null,
-      "notizie": [
-        {
-          "titolo": "Intel Releases Arc GPU Graphics Drivers 101.9175 WHQL - TechPowerUp",
-          "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPUWdVVFFaN0FOQ3Z0REFlRnhqNWJUQ0E2dktTUS1kRmtvM1NtVFBFbWJUTWlVMXRPd0l0RTV2cERNU3Yxb2FlSUJoYUJYQ0psLUpiRXU3RmM5S0VIVWJPTlJJaFYxR3hOZWU3d25STncwU1pJRnpubFRPYjJJdTlNVzlkZ041dXlpTGlnNFhja1FpQdIBlwFBVV95cUxQbWFLT1pmNWozSTdvWWxnTGJ6bXhRUTFDUG85UE8tZ1NoVzFVVVJkckNITTZEUEgzNnJKZ2hPYlIzOG02OE5Wa1JBdEZwNTFEaVlEMzM2TmRXX1ZXd3BGTzhKS2tOWE9JVVpTY2NzcVJmbWJmQmpnWUowMHlENzdjdHU1SmM0S1lCUDFpdzVPSW9mRDQzQi1B?oc=5",
-          "fonte": "TechPowerUp",
-          "data": "2026-11-05 06:21:02+00:00"
-        },
-        {
-          "titolo": "AAEON Releases PICO-PTH4, World’s Smallest Intel Core Ultra Series 3-Powered Board - TimesTech",
-          "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTzVacTFNcGtxZVF2STRGbzhjWnFxNk1vY2lzNTlQajNaUTBKeGkyOXlDUzVJRkx4azhaazlTeUZ3dE9KdnRhNjVsZEhzQWphQkZKRGNZa1NTUEpaeGktTEJJcmdaY0puZS1sVkZaY013NnZ4bk1qRm5YdU5NUUhQQkNFQUhVUlltNzFWaFhhQzMzN3BOZ05fUVctMEJKWURuUmNETg?oc=5",
-          "fonte": "TimesTech",
-          "data": "2026-11-05 06:07:53+00:00"
-        },
-        {
-          "titolo": "‘Intel agencies have evidence’: Foreign funding behind anti-govt narratives, says Jitendra Singh - Free Press Kashmir",
-          "link": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxQTXdXRHB3dTBDREwxeUdjWjFUVXdqdExTUVNXd3NLVFhxVU9lY1hVXzlIcl8zSWVraUM5Qml6WkVQWW4xTWFDWkh2OE1Fb0JxeGdvbUNkY3MwRkNtaFBuRkJSN3RJczIzX3JZYktnZTQwTkhFQ2VnQ0dZRGlXdUhlMmFnSTBqWXBkSURKVjBjVGs2eV9oNFdPWFVvUnp5NUFuRG9DdE9iUWZ6RnRpREpWYllySjhJTzlpUW55aDZ6TEhlUkJXTGFLNHBWOGRoUjk2OW54aTNSTlJRaVVZblpsZ0w0Um9RcUky0gHuAUFVX3lxTFBmUzdOa2hwcWVoRWFhR0cyUHBHdWlhdUlJRjJTQ18yem1TY21FT1ZkaktpX0tvQS1aNlk2c0JlYTJ1WTB5eFVtNWFKYUdRcndFNVEtdnBBZTNGZWVKNE1ZYXY4aEtJWktpYnZGR29ZNDlRQ2NJNWR3WEVBN1FoWEk1UVZ1bHYxWHpURkdNWkFJNV9meGtuQ3hRaE1iNWduRTQzek5mTmFrYkIzQ2hlQzBiQXNZbHFzXzBHTVVHalJpR2VJMWo4NktkS2RXWTc1azVyWVRFNUw0YUJwRDB0Mzd4RUNILVpZRDhnLU9MQkE?oc=5",
-          "fonte": "Free Press Kashmir",
-          "data": "2026-11-05 05:48:45+00:00"
-        },
-        {
-          "titolo": "Intel Obeys Gravity: INTC Weak Guidance and Extended PC Slump Drag Stock Down - FXLeaders",
-          "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNR0p6Uy1kTV8yVy1kalNMa2pnekVRNFg3T09YTFBUN2MxRTFFSXF1Q1BNVnJBYU5aUE5veUNPSFVKTXc3X3BNS1hMMURsd0NaSk96REJJODRfMnRVUVQwUzFZc0c4VS1UN29zVy1QUTN2UTFnWC1OSTVoNTg4LUtmZWtRYi1wZTZ5a1M1UUpMdUFhY1NyeXNlZC1EaDRBOWdCS1lJeVJzblNoc2ozQlFRWE84RUVoZVlRWUlr?oc=5",
-          "fonte": "FXLeaders",
-          "data": "2026-11-05 05:06:32+00:00"
-        },
-        {
-          "titolo": "Intel Arc B580 Facing Discontinuation? Rumor Clearly Explained - igor´sLAB",
-          "link": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNcW40bmdTc1d1VlNjMGs5WW5CR1FuZE56ODE1UmVkX0RoY015NXNKMG01Tm0zYWhWeGhqRjNyNnlFdWNWU0g1VzJ0R3ViSmZKcXJjQWdJY1NSUy1rV2QyemV1XzhkNlU5QnBmMi1EMzNOVXFyNVhBYjZYZmloaHlILUg4NVFjWHgwY0VrTmlPTQ?oc=5",
-          "fonte": "igor´sLAB",
-          "data": "2026-11-05 05:00:00+00:00"
-        },
-        {
-          "titolo": "Intel 14A Reaches PDK 0.9: Manufacturing Process Now Based on Real Silicon Data - igor´sLAB",
-          "link": "https://news.google.com/rss/articles/CBMicEFVX3lxTE0yLW1sYTduTXZtellybTJXdTBwNWFUZ0JwQThtQ1JMdUZUeUVhWm84MjVpN1VUa0daRmxHekZ4Sm9kS0gwMC1ZWG1sQ1NMOVJORjQtbmRudHJoejYxX1dmUDRpMV8zVWpQU0Z5cUN4Y2o?oc=5",
-          "fonte": "igor´sLAB",
-          "data": "2026-11-05 05:00:00+00:00"
-        },
-        {
-          "titolo": "Panther Lake joins AAEON’s Pico-ITX SBC lineup - LinuxGizmos.com",
-          "link": "https://news.google.com/rss/articles/CBMiekFVX3lxTE12cGYzUVBBTjJHekxIZ3FJczdteHNObHVxMkZwUTFUZWNMaWpQOVdhZTV3MGFwekJCNWFEbGlnTHF6aGFvSkdyTk5BWnNEdFl3UzBXQllkX0Z6VXRucWlKdzBoS1hzdEZKYVVnclowY2JZS3VNUlhZV0hR?oc=5",
-          "fonte": "LinuxGizmos.com",
-          "data": "2026-11-05 04:51:15+00:00"
-        },
-        {
-          "titolo": "It's rumored that Intel is switching Wildcat Lake Refresh to the 18A-P process, but Moon Lake will still use the 18A process. - 超能网",
-          "link": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE12ZFowMHRCR1FYcWNzaThQS3IzRElUS0RjOW1veE1FLU9xV0tWNVU4VEl4STlFMEprWlY5RXRhc1ZhMjNHd19MZTY4TQ?oc=5",
-          "fonte": "超能网",
-          "data": "2026-11-05 04:47:09+00:00"
-        },
-        {
-          "titolo": "Intel Stock Halves in a Month as CEO Lip-Bu Tan Buys $9.71 Million of Shares Against the Tide - BigGo Finance",
-          "link": "https://news.google.com/rss/articles/CBMidkFVX3lxTE04ZlgzQ3FIdU5YdDZWdC1INTVNNGQzYnhTNlEwRjhfMHcyeElDN2lya0g3NnY5SVMxbUFzMGJDZ2NQSnNva0FOZ1M5Q2t5WlRwbHBBLWhqUkR2Nm1FMjJQNUk3Z1pSbXpoVC1NNEJVckZ2S1hUbmc?oc=5",
-          "fonte": "BigGo Finance",
-          "data": "2026-11-05 04:35:00+00:00"
-        },
-        {
-          "titolo": "AMD CEO issues a strong warning for the 2027 PC market",
-          "link": "https://www.thestreet.com/technology/amd-2027-pc-market-forecast?.tsrc=rss",
-          "fonte": "feeds.finance.yahoo.com",
-          "data": "2026-11-05 03:47:00+00:00"
-        }
-      ],
-      "scartati": [],
-      "sotto_soglia": false,
-      "nota": "Filtro notizie non disponibile oggi.",
       "nome_mercato": "Stati Uniti",
       "valuta": "USD",
-      "nuova": true,
-      "grafico": "dati/grafici/USA.png",
-      "testi": null,
-      "quantita": 9.6684,
-      "perdita_massima": 110.22670764432881,
-      "costo_r": 0.011175830199311374,
+      "nuova": false,
+      "simbolo": null,
       "posizione_id": "2026-11-04-USA",
-      "capitale": 500.0
+      "nota": "Posizione già aperta su Intel (aperta): oggi nessuna nuova operazione su questo mercato."
     }
   ],
-  "fatto_mattina": "2026-11-05",
-  "fatto_sera": "2026-11-05"
+  "fatto_mattina": "2026-11-06",
+  "fatto_sera": null
 }
