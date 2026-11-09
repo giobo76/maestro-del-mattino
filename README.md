@@ -57,3 +57,10 @@ Tutto in `config.yaml`: elenchi dei titoli, soglia in R, distanza dello stop, mo
 - Progetto: `docs/superpowers/specs/2026-10-17-agente-trading-design.md`
 - Piano di costruzione: `docs/superpowers/plans/2026-10-17-agente-trading.md`
 - Versione 2 (operazioni): `docs/superpowers/specs/2026-10-17-gestione-posizioni-design.md`
+
+## Cambi di colore FTSE MIB (dal 2026-11-09)
+Ogni mattina di borsa aperta l'agente calcola lo **Squeeze Momentum Oscillator [AlgoAlpha]** (codice Pine pubblico,
+licenza MPL 2.0, impostazioni 10/20) sulle 40 aziende del FTSE MIB (`squeeze_titoli` in `config.yaml`) e aggiunge
+all'email la lista di quelle passate **dal verde al rosso** o **dal rosso al verde** all'ultima chiusura. Se non ci sono
+nuove operazioni ma ci sono cambi di colore, parte un'email "🔄 FTSE MIB". Solo osservazione: segnale non ancora testato
+(scanner e verifica su ENI in Trading-Lab, S014). Codice: `agente/squeeze.py`, test: `tests/test_squeeze.py`.

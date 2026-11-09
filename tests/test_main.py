@@ -27,7 +27,7 @@ def config_piccola():
         "ITA": dataclasses.replace(cfg.mercati["ITA"], titoli={"A.MI": "Alfa", "B.MI": "Beta", "C.MI": "Gamma"}),
         "USA": dataclasses.replace(cfg.mercati["USA"], titoli={"X": "Xray", "Y": "Yank", "Z": "Zulu"}),
     }
-    return dataclasses.replace(cfg, mercati=mercati, soglia_r=-100.0)
+    return dataclasses.replace(cfg, mercati=mercati, soglia_r=-100.0, squeeze_titoli={})
 
 
 class Posta:
@@ -244,3 +244,28 @@ def test_capitale_diviso_tra_i_mercati(tmp_path):
     ita = {x["mercato"]: x for x in leggi_oggi(tmp_path / "dati" / "oggi.json")["schede"]}["ITA"]
     assert ita["capitale"] == 500
     assert ita["quantita"] == int(500 // ita["livelli"]["riferimento"])
+
+
+def test_mattina_squeeze_email_anche_senza_operazioni(tmp_path):
+    from agente import squeeze
+    from tests.test_squeeze import serie
+    cfg = config_piccola()
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi())
+    df = serie()
+    vf = squeeze.momentum(df).dropna()
+    giorno = next(vf.index[i] for i in range(1, len(vf)) if vf.iloc[i] < 0 <= vf.iloc[i - 1])
+    cfg = dataclasses.replace(cfg, squeeze_titoli={"SQ.MI": "Prova"})
+    s = servizi()
+    normali = s.scarica_prezzi
+    s.scarica_prezzi = lambda simboli, *a, **k: ({"SQ.MI": df.loc[:giorno]} if simboli == ["SQ.MI"]
+                                                 else normali(simboli, *a, **k))
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 20), s)
+    sq = leggi_oggi(tmp_path / "dati" / "oggi.json")["squeeze"]
+    assert [v["nome"] for v in sq["verso_rosso"]] == ["Prova"]
+    assert [o for o, _ in s.invia.inviate] == ["🔄 FTSE MIB: 1 al rosso"]
+
+
+def test_mattina_squeeze_errore_non_blocca(tmp_path):
+    cfg = dataclasses.replace(config_piccola(), squeeze_titoli={"ROTTO.MI": "Rotto"})
+    esegui_mattina(cfg, tmp_path / "dati", tmp_path / "sito", date(2026, 10, 19), servizi(rotto="ROTTO"))
+    assert leggi_oggi(tmp_path / "dati" / "oggi.json")["squeeze"] is None

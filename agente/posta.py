@@ -93,11 +93,46 @@ def _pagina(contenuto: str, url_pagina: str) -> str:
             "Non è una consulenza finanziaria.</p></div>")
 
 
-def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None) -> tuple[str, str] | None:
+def _data_breve(iso: str | None) -> str:
+    return datetime.fromisoformat(iso).strftime("%d/%m") if iso else ""
+
+
+def blocco_squeeze(sq: dict | None) -> str:
+    """Sezione dell'email con i cambi di colore dello Squeeze Momentum [AlgoAlpha] sul FTSE MIB."""
+    if not sq or not (sq.get("verso_rosso") or sq.get("verso_verde")):
+        return ""
+    def righe(voci, simbolo):
+        return "".join(f"<li>{simbolo} <b>{html_lib.escape(v['nome'])}</b> ({html_lib.escape(v['simbolo'])}): "
+                       f"momentum {_num(v['ieri'])} → {_num(v['momentum'])}, chiusura {_num(v['chiusura'], 3)}</li>"
+                       for v in voci)
+    parti = [f"<h3>🔄 FTSE MIB: cambi di colore alla chiusura del {_data_breve(sq.get('data'))}</h3>",
+             "<p style='font-size:13px;color:#555'>Squeeze Momentum Oscillator [AlgoAlpha], impostazioni 10/20. "
+             "Solo osservazione: segnale non ancora testato.</p>"]
+    if sq.get("verso_rosso"):
+        parti.append("<p><b>Dal verde al rosso</b></p><ul>" + righe(sq["verso_rosso"], "🔴") + "</ul>")
+    if sq.get("verso_verde"):
+        parti.append("<p><b>Dal rosso al verde</b></p><ul>" + righe(sq["verso_verde"], "🟢") + "</ul>")
+    rossi = [v["nome"] for v in sq.get("rossi", [])]
+    parti.append(f"<p style='font-size:13px'>Rossi in tutto: {len(rossi)} su {sq.get('titoli', 0)}"
+                 + (f" ({html_lib.escape(', '.join(rossi))})" if rossi else "") + ".</p>")
+    return "".join(parti)
+
+
+def _num(valore: float, decimali: int = 1) -> str:
+    return f"{valore:+.{decimali}f}".replace(".", ",") if decimali == 1 else f"{valore:.{decimali}f}".replace(".", ",")
+
+
+def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None,
+                  squeeze: dict | None = None) -> tuple[str, str] | None:
     oggi = oggi or datetime.now(ROMA).date()
     nuove = [s for s in schede if s.get("nuova")]
+    sq_html = blocco_squeeze(squeeze)
     if not nuove:
-        return None
+        if not sq_html:
+            return None
+        n_r, n_v = len(squeeze["verso_rosso"]), len(squeeze["verso_verde"])
+        pezzi = ([f"{n_r} al rosso"] if n_r else []) + ([f"{n_v} al verde"] if n_v else [])
+        return "🔄 FTSE MIB: " + ", ".join(pezzi), _pagina(sq_html, url_pagina)
     blocchi = []
     for s in nuove:
         lv, v = s["livelli"], s["valuta"]
@@ -125,7 +160,7 @@ def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None)
                    "Run workflow → comando <b>segna</b>, scegli il mercato ed eseguita <b>no</b>. "
                    "L'agente la seguirà solo su carta e il giorno dopo potrà proporne una nuova.</p>")
     oggetto = "📈 Nuova operazione: " + ", ".join(s["nome"] for s in nuove)
-    return oggetto, _pagina("".join(blocchi), url_pagina)
+    return oggetto, _pagina("".join(blocchi) + sq_html, url_pagina)
 
 
 def email_sera(messaggi: list[Messaggio], url_pagina: str) -> tuple[str, str] | None:

@@ -1,6 +1,6 @@
 """Lettura delle impostazioni da config.yaml."""
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import yaml
 
@@ -31,6 +31,7 @@ class Config:
     conto_simulato_eur: float
     ibkr_capitale_eur: float
     ibkr_mercati: list[str]
+    squeeze_titoli: dict[str, str] = field(default_factory=dict)  # FTSE MIB per i cambi di colore
 
 
 def carica_config(percorso: str = "config.yaml") -> Config:

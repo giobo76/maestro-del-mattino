@@ -24,6 +24,7 @@ from agente.operazioni import (
 from agente.pagina import disegna_grafico, genera_sito
 from agente.posta import email_mattina, email_sera, invia
 from agente.scelta import scegli
+from agente import squeeze
 from agente.spiegazione import Cervello, crea_cervello, giudica_notizie, scrivi_testi
 from agente.statistiche import calcola_statistiche, costo_ordine, quantita
 from agente.storico_r import costruisci_tabella_r, prova_fuori_campione_r, simula_storico
@@ -136,6 +137,18 @@ def _cambio_attuale(servizi: Servizi, oggi: date) -> float | None:
     return cambi[max(cambi)]
 
 
+def _squeeze(cfg: Config, oggi: date, servizi: Servizi) -> dict | None:
+    """Cambi di colore dello Squeeze Momentum sul FTSE MIB (ultima chiusura). Un errore non blocca la mattina."""
+    if not cfg.squeeze_titoli or not borsa_aperta("XMIL", oggi):
+        return None
+    try:
+        prezzi = servizi.scarica_prezzi(list(cfg.squeeze_titoli), 1, oggi, ultima=seduta_precedente("XMIL", oggi))
+        return squeeze.riepilogo(prezzi, cfg.squeeze_titoli)
+    except Exception:  # dati mancanti o errori di calcolo: l'email delle operazioni parte comunque
+        log.exception("Squeeze FTSE MIB non calcolato")
+        return None
+
+
 def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: date,
                    servizi: Servizi) -> None:
     if not all((cartella_dati / f"tabella_{c}.csv").exists() for c in cfg.mercati):
@@ -212,10 +225,12 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
 
     salva_operazioni(ops, cartella_dati / "operazioni.csv")
     (cartella_dati / "parole.json").write_text(json.dumps(parole, ensure_ascii=False), encoding="utf-8")
-    oggi_json = {"data": oggi.isoformat(), "schede": schede, "fatto_mattina": oggi.isoformat(), "fatto_sera": None}
+    sq = _squeeze(cfg, oggi, servizi)
+    oggi_json = {"data": oggi.isoformat(), "schede": schede, "fatto_mattina": oggi.isoformat(), "fatto_sera": None,
+                 "squeeze": sq}
     salva_oggi(cartella_dati / "oggi.json", oggi_json)
     _pubblica(cfg, cartella_dati, cartella_sito, ops, leggi_oggi(cartella_dati / "oggi.json"), servizi)
-    email = email_mattina(schede, URL_PAGINA)
+    email = email_mattina(schede, URL_PAGINA, squeeze=sq)
     if email:
         servizi.invia(*email)
 
