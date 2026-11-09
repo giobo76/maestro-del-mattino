@@ -1,5 +1,5 @@
 {
-  "data": "2026-11-06",
+  "data": "2026-11-09",
   "schede": [
     {
       "mercato": "ITA",
@@ -20,6 +20,6 @@
       "nota": "Posizione già aperta su Intel (aperta): oggi nessuna nuova operazione su questo mercato."
     }
   ],
-  "fatto_mattina": "2026-11-06",
-  "fatto_sera": "2026-11-06"
+  "fatto_mattina": "2026-11-09",
+  "fatto_sera": null
 }
