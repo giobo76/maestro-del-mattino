@@ -62,5 +62,5 @@ Tutto in `config.yaml`: elenchi dei titoli, soglia in R, distanza dello stop, mo
 Ogni mattina di borsa aperta l'agente calcola lo **Squeeze Momentum Oscillator [AlgoAlpha]** (codice Pine pubblico,
 licenza MPL 2.0, impostazioni 10/20) sulle 40 aziende del FTSE MIB (`squeeze_titoli` in `config.yaml`) e aggiunge
 all'email la lista di quelle passate **dal verde al rosso** o **dal rosso al verde** all'ultima chiusura. Se non ci sono
-nuove operazioni ma ci sono cambi di colore, parte un'email "🔄 FTSE MIB". Solo osservazione: segnale non ancora testato
-(scanner e verifica su ENI in Trading-Lab, S014). Codice: `agente/squeeze.py`, test: `tests/test_squeeze.py`.
+nuove operazioni ma ci sono cambi di colore, parte un'email "🔄 FTSE MIB". Solo osservazione: testato in Trading-Lab (S014, E030), come segnale
+di acquisto/vendita non batte il compra e tieni (0,1%/anno contro 2,5% dopo i costi, 2001-2014). Codice: `agente/squeeze.py`, test: `tests/test_squeeze.py`.

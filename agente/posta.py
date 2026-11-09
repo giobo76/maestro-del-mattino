@@ -107,7 +107,7 @@ def blocco_squeeze(sq: dict | None) -> str:
                        for v in voci)
     parti = [f"<h3>🔄 FTSE MIB: cambi di colore alla chiusura del {_data_breve(sq.get('data'))}</h3>",
              "<p style='font-size:13px;color:#555'>Squeeze Momentum Oscillator [AlgoAlpha], impostazioni 10/20. "
-             "Solo osservazione: segnale non ancora testato.</p>"]
+             "Solo osservazione: testato in Trading-Lab (S014), come segnale di acquisto/vendita non batte il compra e tieni.</p>"]
     if sq.get("verso_rosso"):
         parti.append("<p><b>Dal verde al rosso</b></p><ul>" + righe(sq["verso_rosso"], "🔴") + "</ul>")
     if sq.get("verso_verde"):

@@ -43,7 +43,7 @@ def test_email_solo_cambi_di_colore():
     oggetto, html = email_mattina([], URL, squeeze=sq)
     assert oggetto == "🔄 FTSE MIB: 1 al rosso"
     assert "Eni" in html and "06/11" in html and "+5,3 → -14,4" in html and "Rossi in tutto: 1 su 40" in html
-    assert "non ancora testato" in html
+    assert "non batte il compra e tieni" in html
 
 
 def test_riepilogo_ignora_titoli_corti():
