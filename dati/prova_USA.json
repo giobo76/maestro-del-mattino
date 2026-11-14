@@ -1,11 +1,11 @@
 {
-  "dal": "2025-11-06",
-  "al": "2026-11-05",
-  "operazioni": 10,
-  "ancora_aperte": 0,
-  "resa_annunciata": 0.36884607521282065,
-  "resa_reale": 0.28452888749648436,
-  "pct_stop": 0.3,
-  "pct_2r": 0.5,
-  "media_tutte": 0.1411488096398618
+  "dal": "2025-11-13",
+  "al": "2026-11-12",
+  "operazioni": 12,
+  "ancora_aperte": 1,
+  "resa_annunciata": 0.41457907768060426,
+  "resa_reale": -0.16557811865113192,
+  "pct_stop": 0.5,
+  "pct_2r": 0.25,
+  "media_tutte": 0.14456485715648365
 }
