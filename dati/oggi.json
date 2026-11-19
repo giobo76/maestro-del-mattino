@@ -1,5 +1,5 @@
 {
-  "data": "2026-11-18",
+  "data": "2026-11-19",
   "schede": [
     {
       "mercato": "ITA",
@@ -8,7 +8,7 @@
       "nuova": false,
       "simbolo": null,
       "posizione_id": "2026-10-23-ITA",
-      "nota": "Posizione già aperta su Snam (metà già venduta): oggi nessuna nuova operazione su questo mercato."
+      "nota": "Posizione già aperta su Snam (da chiudere all'apertura): oggi nessuna nuova operazione su questo mercato."
     },
     {
       "mercato": "USA",
@@ -20,7 +20,7 @@
       "nota": "Posizione già aperta su Intel (aperta): oggi nessuna nuova operazione su questo mercato."
     }
   ],
-  "fatto_mattina": "2026-11-18",
-  "fatto_sera": "2026-11-18",
+  "fatto_mattina": "2026-11-19",
+  "fatto_sera": null,
   "squeeze": null
 }
