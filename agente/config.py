@@ -32,6 +32,7 @@ class Config:
     ibkr_capitale_eur: float
     ibkr_mercati: list[str]
     squeeze_titoli: dict[str, str] = field(default_factory=dict)  # FTSE MIB per i cambi di colore
+    portafoglio_capitale: float = 0.0  # Portafoglio Investimenti Lab (demo); 0 = sezione disattivata
 
 
 def carica_config(percorso: str = "config.yaml") -> Config:

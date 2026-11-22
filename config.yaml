@@ -11,6 +11,7 @@ gemini_modello: gemini-3.8-flash
 conto_simulato_eur: 1000
 ibkr_capitale_eur: 1000      # conto demo IBKR per il mese di prova (17/10/2026)
 ibkr_mercati: [ITA, USA]     # 500 € per mercato
+portafoglio_capitale: 10000  # Portafoglio Investimenti Lab (Trading-Lab S020), conto demo TradingView
 
 # Costi IBKR (piano Tiered) - da verificare sul conto di Giovanni
 costi:

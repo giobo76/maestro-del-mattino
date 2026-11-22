@@ -122,17 +122,50 @@ def _num(valore: float, decimali: int = 1) -> str:
     return f"{valore:+.{decimali}f}".replace(".", ",") if decimali == 1 else f"{valore:.{decimali}f}".replace(".", ",")
 
 
+def blocco_portafoglio(pf: dict | None) -> str:
+    """Sezione dell'email con il Portafoglio Investimenti Lab (Trading-Lab S020, solo demo)."""
+    if not pf:
+        return ""
+    def eur(x):
+        return f"{x:,.0f} €".replace(",", ".")
+    righe = [(f"{r['nome']} (25%)", f"tieni {eur(r['valore'])} ({r['quantita']:g} {r['sigla']}) - {r['k']}/6")
+             for r in pf["righe"]]
+    n = pf["nasdaq"]
+    soglia = (f" (fine mese: {'esce sotto' if n['stato'] == 1 else 'entra sopra'} {n['soglia']:,.0f}, ora {n['ultimo']:,.0f})".replace(",", ".")
+              if n.get("soglia") else "")
+    righe.append(("Nasdaq 2x (50%)", ("DENTRO: tieni " + eur(pf["capitale"] * 0.5) + " in ETP 2x" if n["stato"] == 1
+                                      else "FUORI: tutto in liquidità") + soglia))
+    righe.append(("Investito in totale", eur(pf["investito"]) + " su " + eur(pf["capitale"])))
+    tabella = "".join(f"<tr><td style='padding:4px 8px'>{html_lib.escape(a)}</td>"
+                      f"<td style='padding:4px 8px'><b>{html_lib.escape(b)}</b></td></tr>" for a, b in righe)
+    if pf["azioni"]:
+        az = "<ul>" + "".join(f"<li style='margin:4px 0'><b>{html_lib.escape(a)}</b></li>" for a in pf["azioni"]) + "</ul>"
+    elif pf.get("prima_volta"):
+        az = "<p>Prima lettura: questa è la situazione da cui partire nel conto demo.</p>"
+    else:
+        az = "<p>Nessuna azione da fare.</p>"
+    return ("<h3>💼 Portafoglio Investimenti Lab (demo)</h3>" + az
+            + f"<table style='border-collapse:collapse'>{tabella}</table>"
+            + "<p style='font-size:13px;color:#555'>Regole testate in Trading-Lab (S020): medie a scalini su Bitcoin ed Ethereum, "
+              "filtro mensile sul Nasdaq-100 2x. Solo conto demo: gli ordini li inserisci tu.</p>")
+
+
 def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None,
-                  squeeze: dict | None = None) -> tuple[str, str] | None:
+                  squeeze: dict | None = None, portafoglio: dict | None = None) -> tuple[str, str] | None:
     oggi = oggi or datetime.now(ROMA).date()
     nuove = [s for s in schede if s.get("nuova")]
     sq_html = blocco_squeeze(squeeze)
+    pf_html = blocco_portafoglio(portafoglio)
+    pf_azione = bool(portafoglio and (portafoglio["azioni"] or portafoglio.get("prima_volta")))
     if not nuove:
-        if not sq_html:
+        if not sq_html and not pf_azione:
             return None
+        if pf_azione:
+            oggetto = "💼 Portafoglio Lab: " + ("; ".join(portafoglio["azioni"]) or "situazione di partenza")
+            return oggetto[:150], _pagina(pf_html + sq_html, url_pagina)
         n_r, n_v = len(squeeze["verso_rosso"]), len(squeeze["verso_verde"])
         pezzi = ([f"{n_r} al rosso"] if n_r else []) + ([f"{n_v} al verde"] if n_v else [])
-        return "🔄 FTSE MIB: " + ", ".join(pezzi), _pagina(sq_html, url_pagina)
+        return "🔄 FTSE MIB: " + ", ".join(pezzi), _pagina(pf_html + sq_html, url_pagina)
     blocchi = []
     for s in nuove:
         lv, v = s["livelli"], s["valuta"]
@@ -160,7 +193,7 @@ def email_mattina(schede: list[dict], url_pagina: str, oggi: date | None = None,
                    "Run workflow → comando <b>segna</b>, scegli il mercato ed eseguita <b>no</b>. "
                    "L'agente la seguirà solo su carta e il giorno dopo potrà proporne una nuova.</p>")
     oggetto = "📈 Nuova operazione: " + ", ".join(s["nome"] for s in nuove)
-    return oggetto, _pagina("".join(blocchi) + sq_html, url_pagina)
+    return oggetto, _pagina("".join(blocchi) + pf_html + sq_html, url_pagina)
 
 
 def email_sera(messaggi: list[Messaggio], url_pagina: str) -> tuple[str, str] | None:

@@ -5,7 +5,7 @@ import json
 import logging
 import os
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Callable
 
@@ -25,6 +25,7 @@ from agente.pagina import disegna_grafico, genera_sito
 from agente.posta import email_mattina, email_sera, invia
 from agente.scelta import scegli
 from agente import squeeze
+from agente import portafoglio
 from agente.spiegazione import Cervello, crea_cervello, giudica_notizie, scrivi_testi
 from agente.statistiche import calcola_statistiche, costo_ordine, quantita
 from agente.storico_r import costruisci_tabella_r, prova_fuori_campione_r, simula_storico
@@ -149,6 +150,27 @@ def _squeeze(cfg: Config, oggi: date, servizi: Servizi) -> dict | None:
         return None
 
 
+def _portafoglio(cfg: Config, cartella_dati: Path, oggi: date, servizi: Servizi) -> dict | None:
+    """Portafoglio Investimenti Lab (S020). Un errore non blocca la mattina."""
+    if cfg.portafoglio_capitale <= 0:
+        return None
+    try:
+        dal = oggi - timedelta(days=420)
+        serie = {s: servizi.indici(s, dal) for s in ("BTC-USD", "ETH-USD", "^NDX")}
+        if any(v is None or v.empty for v in serie.values()):
+            log.error("Portafoglio: dati mancanti")
+            return None
+        file_stato = cartella_dati / "portafoglio.json"
+        precedente = json.loads(file_stato.read_text(encoding="utf-8")) if file_stato.exists() else None
+        pf = portafoglio.calcola(serie["BTC-USD"], serie["ETH-USD"], serie["^NDX"], oggi,
+                                 cfg.portafoglio_capitale, precedente)
+        file_stato.write_text(json.dumps(pf["stato"], ensure_ascii=False, indent=1), encoding="utf-8")
+        return pf
+    except Exception:  # dati mancanti o errori di calcolo: l'email delle operazioni parte comunque
+        log.exception("Portafoglio non calcolato")
+        return None
+
+
 def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: date,
                    servizi: Servizi) -> None:
     if not all((cartella_dati / f"tabella_{c}.csv").exists() for c in cfg.mercati):
@@ -226,11 +248,12 @@ def esegui_mattina(cfg: Config, cartella_dati: Path, cartella_sito: Path, oggi: 
     salva_operazioni(ops, cartella_dati / "operazioni.csv")
     (cartella_dati / "parole.json").write_text(json.dumps(parole, ensure_ascii=False), encoding="utf-8")
     sq = _squeeze(cfg, oggi, servizi)
+    pf = _portafoglio(cfg, cartella_dati, oggi, servizi)
     oggi_json = {"data": oggi.isoformat(), "schede": schede, "fatto_mattina": oggi.isoformat(), "fatto_sera": None,
-                 "squeeze": sq}
+                 "squeeze": sq, "portafoglio": pf}
     salva_oggi(cartella_dati / "oggi.json", oggi_json)
     _pubblica(cfg, cartella_dati, cartella_sito, ops, leggi_oggi(cartella_dati / "oggi.json"), servizi)
-    email = email_mattina(schede, URL_PAGINA, squeeze=sq)
+    email = email_mattina(schede, URL_PAGINA, squeeze=sq, portafoglio=pf)
     if email:
         servizi.invia(*email)
 
