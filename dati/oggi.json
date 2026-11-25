@@ -1,5 +1,5 @@
 {
-  "data": "2026-11-24",
+  "data": "2026-11-25",
   "schede": [
     {
       "mercato": "ITA",
@@ -20,11 +20,11 @@
       "nota": "Posizione già aperta su Intel (aperta): oggi nessuna nuova operazione su questo mercato."
     }
   ],
-  "fatto_mattina": "2026-11-24",
-  "fatto_sera": "2026-11-24",
+  "fatto_mattina": "2026-11-25",
+  "fatto_sera": null,
   "squeeze": null,
   "portafoglio": {
-    "data": "2026-11-24",
+    "data": "2026-11-25",
     "capitale": 10000,
     "righe": [
       {
@@ -33,7 +33,7 @@
         "k": 0,
         "valore": 0.0,
         "quantita": 0.0,
-        "prezzo": 61161.91015625
+        "prezzo": 61210.984375
       },
       {
         "nome": "Ethereum",
@@ -41,13 +41,13 @@
         "k": 0,
         "valore": 0.0,
         "quantita": 0.0,
-        "prezzo": 1721.07568359375
+        "prezzo": 1708.851318359375
       }
     ],
     "nasdaq": {
       "stato": 1,
-      "soglia": 27163.15212109375,
-      "ultimo": 26746.099609375
+      "soglia": 27111.554941406248,
+      "ultimo": 26214.169921875
     },
     "azioni": [],
     "prima_volta": false,
@@ -57,7 +57,7 @@
       "ETH": 0,
       "NDX": 1,
       "mese_ribilanciato": "2026-11",
-      "data": "2026-11-24"
+      "data": "2026-11-25"
     }
   }
 }
