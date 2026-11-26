@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.pubblica.outputs.page_url }}
+      url: ${{ steps.pubblica.outputs.page_url || steps.pubblica2.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -89,11 +89,22 @@ jobs:
             git push
           fi
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         if: steps.agente.outputs.nessun_lavoro == 'false'
         with:
           path: sito
 
+      # A volte GitHub non rende subito visibile il pacchetto appena caricato:
+      # se la prima pubblicazione fallisce, si aspetta e si riprova.
       - id: pubblica
         if: steps.agente.outputs.nessun_lavoro == 'false'
-        uses: actions/deploy-pages@v4
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
+
+      - name: Attendi prima di riprovare
+        if: steps.pubblica.outcome == 'failure'
+        run: sleep 30
+
+      - id: pubblica2
+        if: steps.pubblica.outcome == 'failure'
+        uses: actions/deploy-pages@v5
